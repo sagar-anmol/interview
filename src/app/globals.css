@@ -1,0 +1,172 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+:root {
+  --background: #09090b;
+  --foreground: #e4e4e7;
+  --panel: #0b0b0e;
+  --panel-2: #101014;
+  --border: #1f1f24;
+  --border-strong: #2a2a31;
+  --muted: #8b8b94;
+  --accent-red: #ef4444;
+  --accent-emerald: #34d399;
+  --accent-amber: #fbbf24;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  border-color: var(--border);
+}
+
+::selection {
+  background: rgba(228, 228, 231, 0.18);
+}
+
+/* Thin dark scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2c2c33 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #2c2c33;
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* React Flow dark overrides */
+.react-flow {
+  --xy-background-color: #0a0a0d;
+  --xy-edge-stroke: #52525b;
+  --xy-edge-stroke-selected: #a1a1aa;
+  --xy-connectionline-stroke: #a1a1aa;
+  --xy-attribution-background-color: transparent;
+}
+
+.react-flow__attribution {
+  display: none;
+}
+
+.react-flow__edge-textwrapper {
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  background: #27272a;
+  border: 1px solid #52525b;
+}
+
+.react-flow__handle:hover {
+  background: #a1a1aa;
+}
+
+.react-flow__controls {
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+.react-flow__controls-button {
+  background: #101014;
+  border-bottom: 1px solid var(--border);
+  color: #a1a1aa;
+  fill: #a1a1aa;
+}
+
+.react-flow__controls-button:hover {
+  background: #18181c;
+}
+
+.react-flow__minimap {
+  background: #0b0b0e !important;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes waw {
+  0%,
+  100% {
+    transform: scaleY(0.5);
+  }
+  25% {
+    transform: scaleY(1);
+  }
+  75% {
+    transform: scaleY(0.7);
+  }
+}
+
+.animate-waw {
+  animation: waw 0.9s ease-in-out infinite;
+}
+
+@keyframes bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-live {
+  animation: live-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 180ms ease-out;
+}

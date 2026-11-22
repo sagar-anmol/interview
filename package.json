@@ -1,0 +1,43 @@
+{
+  "name": "interview",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "node scripts/copy-vad-assets.mjs",
+    "copy-vad-assets": "node scripts/copy-vad-assets.mjs",
+    "peer-server": "peerjs --port 9000 --path /peerjs --key peerjs"
+  },
+  "dependencies": {
+    "@google/genai": "^3.6.1",
+    "@ricky0123/vad-web": "^0.0.31",
+    "@xyflow/react": "^13.0.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dexie": "^4.4.7",
+    "lucide-react": "^1.77.0",
+    "next": "16.4.6",
+    "onnxruntime-web": "^1.31.1",
+    "peerjs": "^1.5.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwind-merge": "^3.7.1",
+    "zustand": "^5.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "peerjs-server": "^0.2.9",
+    "playwright-core": "^1.65.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "^5"
+  }
+}
