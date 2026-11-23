@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useInterviewSession } from "@/lib/hooks/useInterviewSession";
 import { getScenario } from "@/lib/interview/scenarios";
 import { cn } from "@/lib/utils";
+import { useInterviewStore } from "@/store/useInterviewStore";
 
 type Tab = "question" | "solution" | "transcript";
 
@@ -20,12 +21,61 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
   const [tab, setTab] = React.useState<Tab>("question");
   const [rf, setRf] = React.useState<ReactFlowInstance | null>(null);
   const [zoom, setZoom] = React.useState(100);
+  const [locked, setLocked] = React.useState(false);
+  const [panMode, setPanMode] = React.useState(false);
+
+  const nodes = useInterviewStore((st) => st.nodes);
+  const edges = useInterviewStore((st) => st.edges);
+  const setGraph = useInterviewStore((st) => st.setGraph);
+  const history = React.useRef<
+    { nodes: typeof nodes; edges: typeof edges; key: string }[]
+  >([]);
+  const historyIndex = React.useRef(-1);
+  const [historyState, setHistoryState] = React.useState({ index: -1, length: 0 });
+  const graphKey = React.useMemo(
+    () =>
+      JSON.stringify({
+        n: nodes.map((n) => ({ id: n.id, p: n.position, d: n.data })),
+        e: edges.map((e) => ({ id: e.id, s: e.source, t: e.target, l: e.label })),
+      }),
+    [nodes, edges],
+  );
+
+  React.useEffect(() => {
+    if (history.current[historyIndex.current]?.key === graphKey) return;
+    history.current = history.current.slice(0, historyIndex.current + 1);
+    history.current.push({ nodes, edges, key: graphKey });
+    historyIndex.current = history.current.length - 1;
+    setHistoryState({ index: historyIndex.current, length: history.current.length });
+  }, [graphKey, nodes, edges]);
+
+  const undo = () => {
+    if (historyIndex.current <= 0) return;
+    historyIndex.current -= 1;
+    const entry = history.current[historyIndex.current];
+    setGraph(entry.nodes, entry.edges);
+    setHistoryState({ index: historyIndex.current, length: history.current.length });
+  };
+  const redo = () => {
+    if (historyIndex.current >= history.current.length - 1) return;
+    historyIndex.current += 1;
+    const entry = history.current[historyIndex.current];
+    setGraph(entry.nodes, entry.edges);
+    setHistoryState({ index: historyIndex.current, length: history.current.length });
+  };
+  const resetView = () => {
+    setTab("question");
+    setLocked(false);
+    setPanMode(false);
+    setZoom(100);
+    rf?.fitView?.({ duration: 200, padding: 0.25 });
+  };
 
   const scenario = getScenario(s.config?.scenarioId ?? "netflix");
 
   if (s.loading || !s.config) {
     return (
-      <div className="flex h-screen items-center justify-center font-mono text-[11px] text-zinc-500">
+      <div className="flex h-screen items-center justify-center font-mono text-[11px] text-slate-500">
         Loading workspace…
       </div>
     );
@@ -49,19 +99,21 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
                 onClick={() => setTab(key)}
                 className={cn(
                   "relative h-11 text-[11.5px] capitalize transition",
-                  tab === key ? "text-zinc-100" : "text-muted hover:text-zinc-300",
+                  tab === key ? "text-slate-900" : "text-muted hover:text-slate-700",
                 )}
               >
                 {key}
                 {tab === key ? (
-                  <span className="absolute inset-x-0 bottom-0 h-px bg-zinc-300" />
+                  <span className="absolute inset-x-0 bottom-0 h-px bg-slate-200" />
                 ) : null}
               </button>
             ))}
             <button
               type="button"
               aria-label="Reset view"
-              className="ml-auto rounded p-1 text-muted hover:text-zinc-300"
+              title="Reset view"
+              onClick={resetView}
+              className="ml-auto rounded p-1 text-muted hover:bg-slate-100 hover:text-slate-700"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
@@ -76,10 +128,10 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
                 <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-muted">
                   Working notes
                 </p>
-                <h2 className="mt-2 text-[17px] font-medium text-zinc-100">
+                <h2 className="mt-2 text-[17px] font-medium text-slate-900">
                   Interviewer decision log
                 </h2>
-                <p className="mt-3 whitespace-pre-wrap text-[12px] leading-relaxed text-zinc-400">
+                <p className="mt-3 whitespace-pre-wrap text-[12px] leading-relaxed text-slate-600">
                   {s.decisionLog.trim() ||
                     "Your architecture notes and the interviewer's running assessment appear here as the session progresses."}
                 </p>
@@ -97,7 +149,7 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
                     <p className="font-mono text-[9px] uppercase tracking-wider text-muted">
                       {turn.speaker}
                     </p>
-                    <p className="mt-1 text-[12px] leading-relaxed text-zinc-400">
+                    <p className="mt-1 text-[12px] leading-relaxed text-slate-600">
                       {turn.spokenText || turn.text}
                       {turn.interrupted ? (
                         <span className="ml-1 text-muted">[interrupted]</span>
@@ -114,16 +166,29 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
           </div>
         </section>
 
-        <section className="relative min-w-0 flex-1 bg-[#0a0a0d]">
+        <section className="relative min-w-0 flex-1 bg-panel-2">
           <ArchitectureCanvas
             showControls={false}
+            locked={locked}
+            panMode={panMode}
             onInstance={(instance) => setRf(instance)}
             onViewportChange={(value) => setZoom(Math.round(value * 100))}
           />
-          <WhiteboardToolbar rf={rf} zoom={zoom} />
+          <WhiteboardToolbar
+            rf={rf}
+            zoom={zoom}
+            locked={locked}
+            panMode={panMode}
+            canUndo={historyState.index > 0}
+            canRedo={historyState.index < historyState.length - 1}
+            onToggleLock={() => setLocked((v) => !v)}
+            onTogglePan={() => setPanMode((v) => !v)}
+            onUndo={undo}
+            onRedo={redo}
+          />
 
           <div className="pointer-events-none absolute right-3 top-3 z-20 flex flex-col items-end gap-2">
-            <div className="pointer-events-auto flex h-[86px] w-[160px] items-center justify-center rounded-xl border border-line-strong bg-panel-2/95 shadow-xl shadow-black/50 backdrop-blur">
+            <div className="pointer-events-auto flex h-[86px] w-[160px] items-center justify-center rounded-xl border border-line-strong bg-panel-2/95 shadow-xl shadow-slate-900/10 backdrop-blur">
               <AiOrb
                 active={s.begun}
                 speaking={s.speechState === "speaking"}
@@ -147,15 +212,15 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
       />
 
       {!s.begun ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-lg border border-line-strong bg-panel-2 p-5 shadow-2xl shadow-black/70">
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-lg border border-line-strong bg-panel-2 p-5 shadow-2xl shadow-slate-900/15">
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
               Practice with AI
             </p>
-            <h2 className="mt-2 text-[19px] font-medium tracking-tight text-zinc-100">
+            <h2 className="mt-2 text-[19px] font-medium tracking-tight text-slate-900">
               {scenario.title}
             </h2>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-500">
+            <p className="mt-1.5 text-[12px] leading-relaxed text-slate-500">
               {scenario.prompt}
             </p>
             <p className="mt-4 border-t border-line pt-3 font-mono text-[10px] text-muted">
@@ -181,10 +246,10 @@ function QuestionPane({ title, prompt }: { title: string; prompt: string }) {
       <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-muted">
         20 minute architecture design
       </p>
-      <h2 className="mt-2 text-[18px] font-medium leading-snug tracking-tight text-zinc-100">
+      <h2 className="mt-2 text-[18px] font-medium leading-snug tracking-tight text-slate-900">
         {title}
       </h2>
-      <p className="mt-3 text-[12px] leading-relaxed text-zinc-500">{prompt}</p>
+      <p className="mt-3 text-[12px] leading-relaxed text-slate-500">{prompt}</p>
 
       <div className="mt-6 space-y-5 border-t border-line pt-5">
         <Guidance title="Start with clarifying requirements.">
@@ -208,7 +273,7 @@ function QuestionPane({ title, prompt }: { title: string; prompt: string }) {
 function Guidance({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[12px] font-medium text-zinc-300">{title}</p>
+      <p className="text-[12px] font-medium text-slate-700">{title}</p>
       <p className="mt-1 text-[11.5px] leading-relaxed text-muted">{children}</p>
     </div>
   );

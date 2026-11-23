@@ -29,7 +29,7 @@ export default function PracticeSessionPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="flex h-screen items-center justify-center font-mono text-[11px] text-zinc-500">
+        <div className="flex h-screen items-center justify-center font-mono text-[11px] text-slate-500">
           Loading session…
         </div>
       }

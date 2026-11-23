@@ -33,7 +33,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
 
   if (s.loading || !s.config) {
     return (
-      <div className="flex h-screen items-center justify-center font-mono text-[11px] text-zinc-500">
+      <div className="flex h-screen items-center justify-center font-mono text-[11px] text-slate-500">
         Loading session…
       </div>
     );
@@ -64,7 +64,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex h-12 shrink-0 items-center justify-between border-b border-line px-5">
-        <span className="text-[14px] font-semibold tracking-tight text-zinc-100">CareerLoop</span>
+        <span className="text-[14px] font-semibold tracking-tight text-slate-900">CareerLoop</span>
         <span className="font-mono text-[9.5px] uppercase tracking-wider text-muted">
           Recorded answer
         </span>
@@ -76,7 +76,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
               Your question
             </p>
-            <h1 className="mt-4 text-[24px] font-medium leading-snug tracking-tight text-zinc-100 md:text-[30px]">
+            <h1 className="mt-4 text-[24px] font-medium leading-snug tracking-tight text-slate-900 md:text-[30px]">
               {question}
             </h1>
             {role ? (
@@ -86,7 +86,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
             ) : null}
 
             <div className="mt-8 rounded-xl border border-line-strong bg-panel-2 p-5">
-              <p className="text-[12px] font-medium text-zinc-300">Record your answer</p>
+              <p className="text-[12px] font-medium text-slate-700">Record your answer</p>
               <p className="mt-1 text-[11px] leading-relaxed text-muted">
                 Speak into your microphone or type your response below. You can submit more
                 than one answer before ending the interview.
@@ -100,8 +100,8 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
                   className={cn(
                     "flex h-11 w-11 items-center justify-center rounded-full border transition",
                     recording
-                      ? "border-red-500/50 bg-red-500/15 text-red-400"
-                      : "border-line-strong bg-zinc-900 text-zinc-300 hover:border-zinc-600",
+                      ? "border-red-500/50 bg-red-600/15 text-red-600"
+                      : "border-line-strong bg-slate-100 text-slate-700 hover:border-slate-300",
                   )}
                 >
                   {recording ? (
@@ -111,7 +111,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
                   )}
                 </button>
                 <div>
-                  <p className="text-[12px] text-zinc-300">
+                  <p className="text-[12px] text-slate-700">
                     {recording ? "Recording…" : "Ready to record"}
                   </p>
                   <p className="mt-0.5 font-mono text-[10px] text-muted">
@@ -124,7 +124,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
               </div>
 
               <div className="mt-5">
-                <label htmlFor="written-answer" className="text-[11.5px] text-zinc-400">
+                <label htmlFor="written-answer" className="text-[11.5px] text-slate-600">
                   Or write your answer
                 </label>
                 <textarea
@@ -136,14 +136,14 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
                   }}
                   rows={7}
                   placeholder="Structure your answer: context, action, result…"
-                  className="mt-2 w-full resize-none rounded-lg border border-line bg-panel px-3 py-2.5 text-[12px] leading-relaxed text-zinc-300 outline-none placeholder:text-zinc-700 focus:border-zinc-600"
+                  className="mt-2 w-full resize-none rounded-lg border border-line bg-panel px-3 py-2.5 text-[12px] leading-relaxed text-slate-700 outline-none placeholder:text-slate-400 focus:border-slate-300"
                 />
                 <div className="mt-3 flex items-center gap-3">
                   <Button onClick={submitAnswer} disabled={!answer.trim()}>
                     Submit answer
                   </Button>
                   {submitted ? (
-                    <span className="font-mono text-[10px] text-emerald-400/80">
+                    <span className="font-mono text-[10px] text-emerald-600/80">
                       Answer sent to interviewer
                     </span>
                   ) : null}
@@ -155,7 +155,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
 
         <aside className="hidden w-[300px] shrink-0 flex-col border-l border-line bg-panel lg:flex">
           <div className="flex h-11 shrink-0 items-center border-b border-line px-4">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
               Transcript
             </p>
           </div>
@@ -168,7 +168,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
                 <p className="font-mono text-[9px] uppercase tracking-wider text-muted">
                   {turn.speaker}
                 </p>
-                <p className="mt-1 text-[11.5px] leading-relaxed text-zinc-400">
+                <p className="mt-1 text-[11.5px] leading-relaxed text-slate-600">
                   {turn.spokenText || turn.text}
                 </p>
               </div>
@@ -186,15 +186,15 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
       />
 
       {!s.begun ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-lg border border-line-strong bg-panel-2 p-5 text-center shadow-2xl shadow-black/70">
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-lg border border-line-strong bg-panel-2 p-5 text-center shadow-2xl shadow-slate-900/15">
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
               Practice with AI
             </p>
-            <h2 className="mt-2 text-[18px] font-medium tracking-tight text-zinc-100">
+            <h2 className="mt-2 text-[18px] font-medium tracking-tight text-slate-900">
               {question}
             </h2>
-            <p className="mt-2 text-[12px] leading-relaxed text-zinc-500">
+            <p className="mt-2 text-[12px] leading-relaxed text-slate-500">
               Record a {s.config.durationSec / 60}-minute response and get structured feedback
               when you submit.
             </p>

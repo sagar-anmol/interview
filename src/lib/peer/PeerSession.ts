@@ -436,6 +436,16 @@ export class PeerSession {
     this.submitTurn(text);
   }
 
+  /** Start a push-to-talk utterance by clearing any buffered audio. */
+  beginPTT() {
+    this.voice.reset();
+  }
+
+  /** Finish a push-to-talk utterance and submit its transcript. */
+  async endPTT() {
+    await this.transcribeAndSubmit();
+  }
+
   destroy() {
     if (this.destroyed) return;
     this.destroyed = true;

@@ -36,7 +36,7 @@ export function AiOrb({
         <>
           <span
             className={cn(
-              "absolute rounded-full border border-zinc-600/40",
+              "absolute rounded-full border border-slate-300/40",
               halo,
               speaking && "animate-live",
             )}
@@ -44,7 +44,7 @@ export function AiOrb({
           />
           <span
             className={cn(
-              "absolute rounded-full border border-zinc-500/30",
+              "absolute rounded-full border border-slate-300/30",
               hero ? "h-36 w-36" : "h-[54px] w-[54px]",
             )}
           />
@@ -55,8 +55,8 @@ export function AiOrb({
           "relative rounded-full border",
           inner,
           active
-            ? "border-zinc-400/60 bg-zinc-100 shadow-[0_0_28px_rgba(228,228,231,0.12)]"
-            : "border-zinc-700 bg-zinc-800",
+            ? "border-slate-300/60 bg-slate-100 shadow-[0_0_28px_rgba(228,228,231,0.12)]"
+            : "border-slate-300 bg-slate-200",
         )}
       />
     </div>

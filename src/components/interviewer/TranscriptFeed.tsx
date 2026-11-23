@@ -21,7 +21,7 @@ export function TranscriptFeed({
   return (
     <div className="flex-1 overflow-y-auto px-3 py-3">
       {turns.length === 0 ? (
-        <p className="mt-6 text-center font-mono text-[11px] leading-relaxed text-zinc-600">
+        <p className="mt-6 text-center font-mono text-[11px] leading-relaxed text-slate-500">
           The interviewer will open the session.
           <br />
           Answer aloud or type below.
@@ -41,37 +41,37 @@ export function TranscriptFeed({
                 <span
                   className={cn(
                     "font-mono text-[9.5px] uppercase tracking-[0.14em]",
-                    isInterviewer ? "text-zinc-500" : "text-zinc-400",
+                    isInterviewer ? "text-slate-500" : "text-slate-600",
                   )}
                 >
                   {isInterviewer ? "Interviewer" : "You"}
                 </span>
-                <span className="font-mono text-[9.5px] text-zinc-700">
+                <span className="font-mono text-[9.5px] text-slate-400">
                   {formatTimestamp(turn.ts)}
                 </span>
               </div>
               <p
                 className={cn(
                   "whitespace-pre-wrap text-[12.5px] leading-relaxed",
-                  isInterviewer ? "text-zinc-300" : "text-zinc-200",
+                  isInterviewer ? "text-slate-700" : "text-slate-900",
                 )}
               >
                 {body || (turn.pending ? "" : "…")}
                 {turn.pending && !body ? (
-                  <span className="inline-flex items-center gap-1 text-zinc-500">
-                    <span className="h-1 w-1 animate-live rounded-full bg-zinc-500" />
+                  <span className="inline-flex items-center gap-1 text-slate-500">
+                    <span className="h-1 w-1 animate-live rounded-full bg-slate-300" />
                     <span
-                      className="h-1 w-1 animate-live rounded-full bg-zinc-500"
+                      className="h-1 w-1 animate-live rounded-full bg-slate-300"
                       style={{ animationDelay: "160ms" }}
                     />
                     <span
-                      className="h-1 w-1 animate-live rounded-full bg-zinc-500"
+                      className="h-1 w-1 animate-live rounded-full bg-slate-300"
                       style={{ animationDelay: "320ms" }}
                     />
                   </span>
                 ) : null}
                 {isInterviewer && turn.interrupted ? (
-                  <span className="ml-1.5 font-mono text-[10px] italic text-zinc-600">
+                  <span className="ml-1.5 font-mono text-[10px] italic text-slate-500">
                     [interrupted]
                   </span>
                 ) : null}
@@ -82,10 +82,10 @@ export function TranscriptFeed({
 
         {tentative?.trim() ? (
           <div className="animate-fade-in">
-            <div className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em] text-zinc-600">
+            <div className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em] text-slate-500">
               You · live
             </div>
-            <p className="text-[12.5px] italic leading-relaxed text-zinc-500">
+            <p className="text-[12.5px] italic leading-relaxed text-slate-500">
               {tentative}
             </p>
           </div>

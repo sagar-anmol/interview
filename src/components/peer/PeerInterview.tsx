@@ -3,14 +3,16 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mic, PhoneOff } from "lucide-react";import { ArchitectureCanvas } from "@/components/canvas/ArchitectureCanvas";
+import { Mic } from "lucide-react";
+import { ArchitectureCanvas } from "@/components/canvas/ArchitectureCanvas";
 import { TopControlBar } from "@/components/TopControlBar";
 import { TranscriptFeed } from "@/components/interviewer/TranscriptFeed";
 import { PeerVideoPanel } from "@/components/peer/PeerVideoPanel";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { PeerSession, type PeerMsg } from "@/lib/peer/PeerSession";
-import { generateReportFromSession } from "@/lib/interview/report";import { getScenario } from "@/lib/interview/scenarios";
+import { generateReportFromSession } from "@/lib/interview/report";
+import { getScenario } from "@/lib/interview/scenarios";
 import {
   elapsedSeconds,
   toPersisted,
@@ -229,32 +231,32 @@ function PeerHostPanel(props: {
   return (
     <aside className="flex h-full w-[400px] shrink-0 flex-col border-r border-line bg-panel">
       <div className="border-b border-line p-3">
-        <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+        <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
           Interviewer · host
         </p>
-        <h1 className="mt-1 text-[14.5px] font-medium text-zinc-100">
+        <h1 className="mt-1 text-[14.5px] font-medium text-slate-900">
           {props.scenarioTitle}
         </h1>
         <div className="mt-2.5 space-y-1.5">
           <div className="flex items-center justify-between text-[11.5px]">
-            <span className="text-zinc-500">Room code</span>
+            <span className="text-slate-500">Room code</span>
             <button
               onClick={props.onCopy}
-              className="flex items-center gap-1 rounded border border-line-strong px-2 py-0.5 font-mono text-[10px] text-zinc-400 hover:bg-zinc-800"
+              className="flex items-center gap-1 rounded border border-line-strong px-2 py-0.5 font-mono text-[10px] text-slate-600 hover:bg-slate-200"
             >
               {props.roomCode || "----"}
               {props.roomCopied ? " copied" : ""}
             </button>
           </div>
           <div className="flex items-center justify-between text-[11.5px]">
-            <span className="text-zinc-500">Peer id</span>
-            <span className="font-mono text-[10px] text-zinc-600">
+            <span className="text-slate-500">Peer id</span>
+            <span className="font-mono text-[10px] text-slate-500">
               {props.hostPeerId || "…"}
             </span>
           </div>
           <div className="flex items-center justify-between text-[11.5px]">
-            <span className="text-zinc-500">Candidate</span>
-            <span className="font-mono text-[10px] text-zinc-600">
+            <span className="text-slate-500">Candidate</span>
+            <span className="font-mono text-[10px] text-slate-500">
               {props.guestJoined
                 ? props.guestPeerId || "joined"
                 : `awaiting /join/${props.roomCode || "…"}`}
@@ -265,17 +267,17 @@ function PeerHostPanel(props: {
 
       {guide ? (
         <div className="border-b border-line p-3">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
             Interviewer guide (AI-generated)
           </p>
           <ul className="mt-2 space-y-1.5">
             {guide.focusAreas.map((area, i) => (
-              <li key={i} className="text-[11.5px] text-zinc-300">
+              <li key={i} className="text-[11.5px] text-slate-700">
                 {area}
               </li>
             ))}
             {guide.probeQuestions.slice(0, 5).map((q, i) => (
-              <li key={i} className="text-[11.5px] text-zinc-400">
+              <li key={i} className="text-[11.5px] text-slate-600">
                 {q}
               </li>
             ))}
@@ -295,8 +297,8 @@ function PeerHostPanel(props: {
             Submit question
           </Button>
           <Button onClick={props.onMic} variant="subtle" disabled={props.ended}>
-            <PhoneOff className="h-3.5 w-3.5" />
-            Mic
+            <Mic className="h-3.5 w-3.5" />
+            Speak question
           </Button>
           <Button
             variant="subtle"
@@ -317,21 +319,21 @@ function PeerHostPanel(props: {
               }
             }}
             placeholder="Type question…"
-            className="h-9 flex-1 rounded border border-line bg-[#0a0a0d] px-2.5 font-mono text-[12px] text-zinc-300 placeholder:text-zinc-600 outline-none focus:border-zinc-600"
+            className="h-9 flex-1 rounded border border-line bg-panel px-2.5 font-mono text-[12px] text-slate-900 placeholder:text-slate-400 outline-none focus:border-slate-400"
           />
         </div>
-        <p className="mt-2 text-[10.5px] leading-relaxed text-zinc-600">
+        <p className="mt-2 text-[10.5px] leading-relaxed text-slate-500">
           Speak through your mic or type the question. The candidate draws and
           answers — they can hear you but not your text.
         </p>
       </div>
 
       {props.ending ? (
-        <div className="flex items-center justify-center gap-1.5 border-t border-line px-3 py-2.5 text-[11px] text-zinc-500">
+        <div className="flex items-center justify-center gap-1.5 border-t border-line px-3 py-2.5 text-[11px] text-slate-500">
           Generating the debrief…
         </div>
       ) : props.ended ? (
-        <div className="border-t border-line px-3 py-2.5 text-[11px] text-zinc-500">
+        <div className="border-t border-line px-3 py-2.5 text-[11px] text-slate-500">
           Report ready — the peer will reconnect to view it.
         </div>
       ) : null}

@@ -16,13 +16,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CareerLoop · Interview Simulator",
+  title: "CareerLoop · Interview Practice",
   description:
-    "A voice-first system design interview simulator for senior engineering candidates.",
+    "Timed mock interviews for system design, DSA, SQL, behavioral, product, ML and more — with AI or a peer.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#09090b",
+  themeColor: "#f5f7fa",
   width: "device-width",
   initialScale: 1,
 };

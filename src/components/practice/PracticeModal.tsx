@@ -50,7 +50,7 @@ export function PracticeModal({
   if (!open) return null;
 
   return (
-    <div className="md-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+    <div className="md-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-slate-800/25 p-4 backdrop-blur-md">
       <div
         ref={panelRef}
         role="dialog"
@@ -58,18 +58,18 @@ export function PracticeModal({
         aria-label={title}
         tabIndex={-1}
         className={cn(
-          "md-modal-panel relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-xl border border-line-strong bg-panel-2 shadow-2xl shadow-black/70 outline-none",
+          "md-modal-panel glass-panel backdrop-blur-xl backdrop-saturate-150 relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-xl outline-none",
           width === "lg" ? "max-w-2xl" : "max-w-lg",
         )}
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div className="min-w-0">
             {eyebrow ? (
-              <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-zinc-500">
+              <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-slate-500">
                 {eyebrow}
               </p>
             ) : null}
-            <h2 className="mt-1 text-[17px] font-medium tracking-tight text-zinc-100">
+            <h2 className="mt-1 text-[17px] font-medium tracking-tight text-slate-900">
               {title}
             </h2>
           </div>
@@ -78,7 +78,7 @@ export function PracticeModal({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="-mr-1 flex h-7 w-7 items-center justify-center rounded-md text-muted transition hover:bg-zinc-900 hover:text-zinc-200"
+              className="-mr-1 flex h-7 w-7 items-center justify-center rounded-md text-muted transition hover:bg-slate-100 hover:text-slate-900"
             >
               <X className="h-4 w-4" />
             </button>

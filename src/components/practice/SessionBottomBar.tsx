@@ -42,7 +42,7 @@ export function SessionBottomBar({
             Submit interview
           </Button>
         ) : null}
-        <span className="flex items-center gap-1.5 font-mono text-[12px] tabular-nums text-zinc-400">
+        <span className="flex items-center gap-1.5 font-mono text-[12px] tabular-nums text-slate-600">
           <Clock className="h-3.5 w-3.5 text-muted" />
           {formatClock(remainingSec)}
         </span>

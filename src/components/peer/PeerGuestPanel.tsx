@@ -106,20 +106,26 @@ export function PeerGuestPanel() {
     sessionRef.current?.submitTurn(text);
   };
 
+  const toggleMic = () => {
+    const next = !micOn;
+    setMicOn(next);
+    sessionRef.current?.setMicEnabled(next);
+  };
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
-      <header className="flex h-12 items-center justify-between border-b border-line bg-[#0a0a0d] px-3">
+      <header className="flex h-12 items-center justify-between border-b border-line bg-panel px-3">
         <div className="flex items-center gap-2.5">
-          <span className="h-1.5 w-1.5 animate-live rounded-full bg-red-500" />
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-300">
+          <span className="h-1.5 w-1.5 animate-live rounded-full bg-red-600" />
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-slate-900">
             Peer interview · candidate
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-zinc-600">
+          <span className="font-mono text-[10px] text-slate-500">
             {connected ? formatClock(elapsed) : "joining…"}
           </span>
-          <Link href="/" className="text-[11px] text-zinc-500 underline">
+          <Link href="/" className="text-[11px] text-slate-500 underline">
             New session
           </Link>
         </div>
@@ -128,29 +134,29 @@ export function PeerGuestPanel() {
       <div className="flex min-h-0 flex-1">
         <aside className="w-[360px] shrink-0 border-r border-line bg-panel">
           <div className="border-b border-line p-3">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
               Candidate · You draw
             </p>
-            <h1 className="mt-1 text-[15px] font-medium text-zinc-100">
+            <h1 className="mt-1 text-[15px] font-medium text-slate-900">
               {scenarioTitle || "System Design Interview"}
             </h1>
             <div className="mt-2.5 space-y-1.5">
               <div className="flex items-center justify-between text-[11px]">
-                <span className="text-zinc-500">Room</span>
-                <span className="font-mono text-[10.5px] text-zinc-400">
+                <span className="text-slate-500">Room</span>
+                <span className="font-mono text-[10.5px] text-slate-600">
                   {code}
                 </span>
               </div>
               <div className="flex items-center justify-between text-[11px]">
-                <span className="text-zinc-500">Host</span>
-                <span className="font-mono text-[10.5px] text-zinc-600">
+                <span className="text-slate-500">Host</span>
+                <span className="font-mono text-[10.5px] text-slate-500">
                   {connected ? hostId || "connecting…" : "connecting…"}
                 </span>
               </div>
             </div>
-            <p className="mt-2 text-[10.5px] leading-relaxed text-zinc-600">
+            <p className="mt-2 text-[10.5px] leading-relaxed text-slate-500">
               Draw with handles. The interviewer shares the canvas and answers
-              over WebRTC.
+              live.
             </p>
           </div>
 
@@ -160,16 +166,16 @@ export function PeerGuestPanel() {
             speechState="idle"
             micLevel={0}
             vadMode="auto"
-            muted={false}
+            muted={!micOn}
             disabled={endedByHost}
-            onToggleMute={() => {}}
+            onToggleMute={toggleMic}
             onInterrupt={() => sessionRef.current?.sendInterrupt()}
-            onPTTBegin={() => {}}
-            onPTTEnd={() => {}}
+            onPTTBegin={() => sessionRef.current?.beginPTT()}
+            onPTTEnd={() => void sessionRef.current?.endPTT()}
             onSendText={handleSubmitText}
           />
           <div className="px-3 pb-3">
-            <p className="text-[10.5px] leading-relaxed text-zinc-700">
+            <p className="text-[10.5px] leading-relaxed text-slate-400">
               Double-click to rename nodes and edges. Your edits sync live.
             </p>
           </div>
@@ -184,11 +190,7 @@ export function PeerGuestPanel() {
             remoteLabel="Interviewer"
             micOn={micOn}
             camOn={camOn}
-            onToggleMic={() => {
-              const next = !micOn;
-              setMicOn(next);
-              sessionRef.current?.setMicEnabled(next);
-            }}
+            onToggleMic={toggleMic}
             onToggleCam={() => {
               const next = !camOn;
               setCamOn(next);
@@ -199,7 +201,7 @@ export function PeerGuestPanel() {
       </div>
 
       {endedByHost ? (
-        <div className="border-t border-line bg-panel px-4 py-3 text-center font-mono text-[11px] text-zinc-500">
+        <div className="border-t border-line bg-panel px-4 py-3 text-center font-mono text-[11px] text-slate-500">
           Interview ended by the interviewer. The debrief is available on the
           host&apos;s tab.
         </div>

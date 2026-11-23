@@ -1,6 +1,8 @@
 import {
   REPORT_SCHEMA,
+  isTrackInterview,
   reportSystemPrompt,
+  trackReportPrompt,
 } from "@/lib/interview/prompts";
 import {
   errorResponse,
@@ -19,6 +21,7 @@ interface ReportBody {
   decisionLog?: string;
   elapsedSec?: number;
   hireSignalHint?: string;
+  track?: string;
 }
 
 export async function POST(req: Request) {
@@ -70,7 +73,9 @@ export async function POST(req: Request) {
         model,
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         config: {
-        systemInstruction: reportSystemPrompt(scenario),
+        systemInstruction: isTrackInterview(body.track)
+          ? trackReportPrompt(body.track as Parameters<typeof trackReportPrompt>[0])
+          : reportSystemPrompt(scenario),
         temperature: 0.4,
         maxOutputTokens: 2600,
         responseMimeType: "application/json",

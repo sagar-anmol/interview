@@ -53,18 +53,18 @@ export function Dialog({
       >
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute right-3 top-3 rounded p-1 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300"
+          className="absolute right-3 top-3 rounded p-1 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
           aria-label="Close"
         >
           <X className="h-3.5 w-3.5" />
         </button>
         {title ? (
-          <h2 className="pr-6 text-sm font-medium tracking-tight text-zinc-100">
+          <h2 className="pr-6 text-sm font-medium tracking-tight text-slate-900">
             {title}
           </h2>
         ) : null}
         {description ? (
-          <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-500">
+          <p className="mt-1.5 text-[13px] leading-relaxed text-slate-500">
             {description}
           </p>
         ) : null}

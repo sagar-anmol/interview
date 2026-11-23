@@ -80,6 +80,31 @@
   }
 }
 
+@keyframes md-card-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes md-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .md-enter {
   animation: md-enter var(--md-duration-long) var(--md-ease-decelerate) backwards;
 }
@@ -105,7 +130,7 @@
 }
 
 .md-stagger > * {
-  animation: md-enter var(--md-duration-long) var(--md-ease-decelerate) backwards;
+  animation: md-card-in var(--md-duration-long) var(--md-ease-decelerate) backwards;
 }
 .md-stagger > *:nth-child(1) {
   animation-delay: 60ms;
@@ -134,8 +159,33 @@
     box-shadow var(--md-duration-medium) var(--md-ease-standard);
 }
 .md-lift:hover {
-  transform: translate3d(0, -3px, 0);
-  box-shadow: 0 12px 32px -18px rgba(0, 0, 0, 0.9);
+  transform: translate3d(0, -4px, 0) scale(1.01);
+  box-shadow: 0 18px 40px -22px rgba(15, 23, 42, 0.5);
+}
+.md-lift:active {
+  transform: translate3d(0, -1px, 0) scale(0.99);
+  transition-duration: var(--md-duration-short);
+}
+
+.md-card-in {
+  animation: md-card-in var(--md-duration-long) var(--md-ease-decelerate) backwards;
+}
+
+.md-pop {
+  animation: md-pop var(--md-duration-medium) var(--md-ease-emphasized);
+}
+
+.md-press:active {
+  transform: scale(0.97);
+  transition: transform var(--md-duration-short) var(--md-ease-accelerate);
+}
+
+.md-arrow {
+  transition: transform var(--md-duration-medium) var(--md-ease-standard);
+}
+.md-lift:hover .md-arrow,
+.group:hover .md-arrow {
+  transform: translate3d(3px, 0, 0);
 }
 
 .md-sheen {
@@ -150,7 +200,7 @@
   background: linear-gradient(
     100deg,
     transparent 28%,
-    rgba(228, 228, 231, 0.055) 50%,
+    rgba(255, 255, 255, 0.22) 50%,
     transparent 72%
   );
   transform: translate3d(-120%, 0, 0);
@@ -187,6 +237,9 @@
   .md-enter,
   .md-enter-left,
   .md-stagger > *,
+  .md-card-in,
+  .md-pop,
+  .md-lift,
   .md-ambient-a,
   .md-ambient-b,
   .md-wire,
@@ -199,6 +252,8 @@
     animation: none !important;
   }
   .md-lift,
+  .md-press,
+  .md-arrow,
   .md-sheen::after {
     transition: none !important;
   }

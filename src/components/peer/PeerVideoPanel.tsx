@@ -49,10 +49,10 @@ export function PeerVideoPanel({
   const remoteHasVideo = Boolean(remote && remote.getVideoTracks().length > 0);
 
   const tile =
-    "h-[104px] w-[184px] overflow-hidden rounded border border-white/10 bg-black object-cover";
+    "h-[104px] w-[184px] overflow-hidden rounded border border-slate-200 bg-black object-cover";
 
   return (
-    <div className="absolute right-3 top-3 z-40 flex flex-col gap-1.5 rounded-lg border border-white/10 bg-black/70 p-1.5 shadow-lg backdrop-blur-md">
+    <div className="absolute right-3 top-3 z-40 flex flex-col gap-1.5 rounded-lg border border-slate-200 bg-black/70 p-1.5 shadow-lg backdrop-blur-md">
       <div className="flex items-center gap-2.5">
         {remote && remoteHasVideo ? (
           <div className="flex flex-col items-center gap-1">
@@ -85,12 +85,12 @@ export function PeerVideoPanel({
             <button
               type="button"
               onClick={onToggleMic}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded border border-white/10 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-white/60 transition-colors hover:bg-white/10 hover:text-white/90"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded border border-slate-200 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-white/60 transition-colors hover:bg-slate-900/10 hover:text-white/90"
             >
               {micOn ? (
                 <Mic className="h-3 w-3" />
               ) : (
-                <MicOff className="h-3 w-3 text-red-400" />
+                <MicOff className="h-3 w-3 text-red-600" />
               )}
               {micOn ? "Mic on" : "Muted"}
             </button>
@@ -99,12 +99,12 @@ export function PeerVideoPanel({
             <button
               type="button"
               onClick={onToggleCam}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded border border-white/10 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-white/60 transition-colors hover:bg-white/10 hover:text-white/90"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded border border-slate-200 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-white/60 transition-colors hover:bg-slate-900/10 hover:text-white/90"
             >
               {camOn ? (
                 <Video className="h-3 w-3" />
               ) : (
-                <VideoOff className="h-3 w-3 text-red-400" />
+                <VideoOff className="h-3 w-3 text-red-600" />
               )}
               {camOn ? "Cam on" : "Cam off"}
             </button>

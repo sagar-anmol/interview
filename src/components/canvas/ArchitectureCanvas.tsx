@@ -34,15 +34,15 @@ const defaultEdgeOptions = {
     type: MarkerType.ArrowClosed,
     width: 14,
     height: 14,
-    color: "#52525b",
+    color: "#64748b",
   },
-  style: { strokeWidth: 1.25, stroke: "#52525b" },
+  style: { strokeWidth: 1.25, stroke: "#64748b" },
   labelStyle: {
-    fill: "#a1a1aa",
+    fill: "#475569",
     fontSize: 10,
     fontFamily: "var(--font-geist-mono), monospace",
   },
-  labelBgStyle: { fill: "#101014", stroke: "#27272a" },
+  labelBgStyle: { fill: "#f8fafc", stroke: "#cbd5e1" },
   labelBgPadding: [4, 2] as [number, number],
   labelBgBorderRadius: 3,
 };
@@ -51,6 +51,8 @@ interface ArchitectureCanvasProps {
   readOnly?: boolean;
   showControls?: boolean;
   showPalette?: boolean;
+  locked?: boolean;
+  panMode?: boolean;
   onInstance?: (instance: ReactFlowInstance) => void;
   onViewportChange?: (zoom: number) => void;
 }
@@ -59,6 +61,8 @@ function ArchitectureCanvasInner({
   readOnly,
   showControls = true,
   showPalette = true,
+  locked = false,
+  panMode = false,
   onInstance,
   onViewportChange,
 }: ArchitectureCanvasProps) {
@@ -176,7 +180,7 @@ function ArchitectureCanvasInner({
 
       <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
         {readOnly ? (
-          <span className="rounded border border-line bg-panel/90 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+          <span className="rounded border border-line bg-panel/90 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-slate-500">
             View only
           </span>
         ) : (
@@ -213,22 +217,23 @@ function ArchitectureCanvasInner({
             label: (edge.data?.label as string) ?? edge.label?.toString() ?? "",
           })
         }
-        nodesDraggable={!readOnly}
-        nodesConnectable={!readOnly}
-        elementsSelectable={!readOnly}
-        deleteKeyCode={readOnly ? null : ["Backspace", "Delete"]}
+        nodesDraggable={!readOnly && !locked && !panMode}
+        nodesConnectable={!readOnly && !locked && !panMode}
+        elementsSelectable={!readOnly && !locked}
+        panOnDrag={!locked}
+        deleteKeyCode={readOnly || locked ? null : ["Backspace", "Delete"]}
         proOptions={{ hideAttribution: true }}
         minZoom={0.25}
         maxZoom={2}
         fitView
         fitViewOptions={{ padding: 0.25 }}
-        className="bg-[#0a0a0d]"
+        className="bg-panel-2"
       >
         <Background
           variant={BackgroundVariant.Dots}
           gap={22}
           size={1}
-          color="#232329"
+          color="#cbd5e1"
         />
         {showControls ? (
           <Controls
@@ -242,8 +247,8 @@ function ArchitectureCanvasInner({
             position="bottom-right"
             pannable
             zoomable
-            nodeColor="#2a2a31"
-            maskColor="rgba(9,9,11,0.75)"
+            nodeColor="#94a3b8"
+            maskColor="rgba(241,245,249,0.75)"
             className="!bottom-3 !right-3"
           />
         ) : null}
@@ -251,7 +256,7 @@ function ArchitectureCanvasInner({
 
       {nodes.length === 0 ? (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <p className="max-w-[320px] text-center font-mono text-[11px] leading-relaxed tracking-tight text-zinc-600">
+          <p className="max-w-[320px] text-center font-mono text-[11px] leading-relaxed tracking-tight text-slate-500">
             Drag a component from the palette onto the canvas, then connect
             nodes by dragging between their handles.
           </p>
@@ -323,7 +328,7 @@ function ArchitectureCanvasInner({
               }
             }}
             placeholder="e.g. gRPC"
-            className="h-9 w-full rounded border border-line-strong bg-[#0a0a0d] px-2.5 font-mono text-[12px] text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-zinc-500"
+            className="h-9 w-full rounded border border-line-strong bg-panel px-2.5 font-mono text-[12px] text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400"
           />
         ) : null}
       </Dialog>
@@ -335,6 +340,8 @@ export function ArchitectureCanvas({
   readOnly,
   showControls = true,
   showPalette = true,
+  locked = false,
+  panMode = false,
   onInstance,
   onViewportChange,
 }: ArchitectureCanvasProps) {
@@ -344,6 +351,8 @@ export function ArchitectureCanvas({
         readOnly={readOnly}
         showControls={showControls}
         showPalette={showPalette}
+        locked={locked}
+        panMode={panMode}
         onInstance={onInstance}
         onViewportChange={onViewportChange}
       />

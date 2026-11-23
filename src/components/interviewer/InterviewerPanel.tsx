@@ -15,11 +15,11 @@ const STATUS_LABEL: Record<SpeechState, string> = {
 };
 
 const STATUS_COLOR: Record<SpeechState, string> = {
-  idle: "bg-zinc-600",
-  listening: "bg-red-500 animate-live",
+  idle: "bg-slate-400",
+  listening: "bg-red-600 animate-live",
   transcribing: "bg-amber-400 animate-live",
   thinking: "bg-amber-400 animate-live",
-  speaking: "bg-emerald-400",
+  speaking: "bg-emerald-600",
 };
 
 function Waveform({
@@ -44,7 +44,7 @@ function Waveform({
           key={i}
           className={cn(
             "w-[2px] rounded-full transition-all duration-200",
-            active ? "bg-zinc-400" : "bg-zinc-700",
+            active ? "bg-slate-300" : "bg-slate-100",
             active && "animate-waw",
           )}
           style={{
@@ -97,10 +97,10 @@ export function InterviewerPanel({
               STATUS_COLOR[speechState],
             )}
           />
-          <span className="text-[12px] font-medium text-zinc-200">
+          <span className="text-[12px] font-medium text-slate-900">
             AI Interviewer
           </span>
-          <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-600">
+          <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
             {speechState === "idle" ? "" : STATUS_LABEL[speechState]}
           </span>
         </div>
@@ -125,7 +125,7 @@ export function InterviewerPanel({
       ) : (
         <div className="border-t border-line bg-panel px-3 py-3">
           <TextDock disabled={disabled} onSendText={onSendText} />
-          <p className="mt-1.5 font-mono text-[9.5px] tracking-tight text-zinc-700">
+          <p className="mt-1.5 font-mono text-[9.5px] tracking-tight text-slate-400">
             Text-only session — press Enter to send.
           </p>
         </div>
@@ -157,7 +157,7 @@ function TextDock({
         }
       }}
       placeholder="Type your answer…"
-      className="h-9 w-full rounded-md border border-line bg-[#0a0a0d] px-2.5 text-[12.5px] text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-zinc-600"
+      className="h-9 w-full rounded-md border border-line bg-panel px-2.5 text-[12.5px] text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400"
     />
   );
 }

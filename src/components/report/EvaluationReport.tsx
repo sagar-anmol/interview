@@ -18,15 +18,15 @@ import { Badge } from "@/components/ui/badge";
 function HireSignal({ signal }: { signal: Report["hireSignal"] }) {
   const color =
     signal.includes("No Hire")
-      ? "text-red-500"
+      ? "text-red-600"
       : signal.includes("Hire") && signal !== "No Hire"
         ? signal.startsWith("Strong")
-          ? "text-emerald-400"
-          : "text-amber-400"
-        : "text-zinc-500";
+          ? "text-emerald-600"
+          : "text-amber-600"
+        : "text-slate-500";
   return (
     <div className="rounded-md border border-line p-3.5">
-      <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+      <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
         Hire signal
       </p>
       <p className={`mt-1.5 text-[15px] font-semibold ${color}`}>{signal}</p>
@@ -49,13 +49,13 @@ function ScoreTable({ scores }: { scores: ScoreRow[] }) {
     <table className="w-full border-collapse text-[12.5px]">
       <thead>
         <tr className="border-b border-line">
-          <th className="py-2 text-left font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+          <th className="py-2 text-left font-mono text-[10px] uppercase tracking-wider text-slate-500">
             Area
           </th>
-          <th className="py-2 text-right font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+          <th className="py-2 text-right font-mono text-[10px] uppercase tracking-wider text-slate-500">
             Score (1–5)
           </th>
-          <th className="py-2 text-left font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+          <th className="py-2 text-left font-mono text-[10px] uppercase tracking-wider text-slate-500">
             Rationale
           </th>
         </tr>
@@ -63,11 +63,11 @@ function ScoreTable({ scores }: { scores: ScoreRow[] }) {
       <tbody>
         {scores.map((s) => (
           <tr key={s.key} className="border-b border-line/70">
-            <td className="py-2.5 text-zinc-300">{label(s)}</td>
-            <td className="py-2.5 text-right font-mono text-zinc-500">
+            <td className="py-2.5 text-slate-700">{label(s)}</td>
+            <td className="py-2.5 text-right font-mono text-slate-500">
               {s.score}
             </td>
-            <td className="py-2.5 leading-relaxed text-zinc-400">
+            <td className="py-2.5 leading-relaxed text-slate-600">
               {s.rationale}
             </td>
           </tr>
@@ -85,16 +85,16 @@ function Bullets({
   empty: string;
 }) {
   if (!items.length) {
-    return <p className="text-[12px] text-zinc-600">{empty}</p>;
+    return <p className="text-[12px] text-slate-500">{empty}</p>;
   }
   return (
     <ul className="space-y-1.5">
       {items.map((item, i) => (
-        <li key={i} className="text-[12px] leading-relaxed text-zinc-300">
-          <span className="text-zinc-600">—</span>{" "}
+        <li key={i} className="text-[12px] leading-relaxed text-slate-700">
+          <span className="text-slate-500">—</span>{" "}
           {item.point}
           {item.evidence ? (
-            <span className="text-[11.5px] italic text-zinc-600">
+            <span className="text-[11.5px] italic text-slate-500">
               {" "}
               — “{item.evidence}”
             </span>
@@ -152,7 +152,7 @@ export function EvaluationReportView({ sessionId }: { sessionId: string }) {
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <span className="font-mono text-[11px] text-zinc-500">
+        <span className="font-mono text-[11px] text-slate-500">
           Loading report…
         </span>
       </div>
@@ -162,17 +162,17 @@ export function EvaluationReportView({ sessionId }: { sessionId: string }) {
   return (
     <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col px-6 py-8">
       <header className="flex items-center justify-between border-b border-line pb-4">
-        <h1 className="text-[22px] font-medium tracking-tight text-zinc-100">
+        <h1 className="text-[22px] font-medium tracking-tight text-slate-900">
           Evaluation Report
         </h1>
-        <Badge className="border-zinc-600 text-zinc-400">
+        <Badge className="border-slate-300 text-slate-600">
           {session.status === "completed" ? "Completed" : session.status}
         </Badge>
       </header>
 
       {!report ? (
         <div className="mt-6 rounded-md border border-line bg-panel p-4">
-          <p className="text-[13px] text-zinc-400">
+          <p className="text-[13px] text-slate-600">
             No debrief available yet. The evaluator generates one after a
             completed session; you can request it again if needed.
           </p>
@@ -185,7 +185,7 @@ export function EvaluationReportView({ sessionId }: { sessionId: string }) {
           <section className="mt-5">
             <HireSignal signal={report.hireSignal} />
             {report.summary ? (
-              <p className="mt-2.5 text-[12.5px] leading-relaxed text-zinc-400">
+              <p className="mt-2.5 text-[12.5px] leading-relaxed text-slate-600">
                 {report.summary}
               </p>
             ) : null}
@@ -193,7 +193,7 @@ export function EvaluationReportView({ sessionId }: { sessionId: string }) {
 
           <section className="mt-6">
             <div className="flex items-center justify-between border-b border-line pb-2">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
                 Scores
               </span>
             </div>
@@ -202,7 +202,7 @@ export function EvaluationReportView({ sessionId }: { sessionId: string }) {
 
           <section className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="rounded-md border border-line bg-panel p-3.5">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-500/70">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-600/70">
                 Strengths
               </span>
               <Bullets
@@ -211,7 +211,7 @@ export function EvaluationReportView({ sessionId }: { sessionId: string }) {
               />
             </div>
             <div className="rounded-md border border-line bg-panel p-3.5">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-red-500/70">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-red-600/70">
                 Weaknesses
               </span>
               <Bullets
@@ -222,21 +222,21 @@ export function EvaluationReportView({ sessionId }: { sessionId: string }) {
           </section>
 
           <section className="mt-6 rounded-md border border-line bg-panel p-3.5">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
               Architecture critique
             </span>
-            <p className="mt-2 text-[12.5px] leading-relaxed text-zinc-400">
+            <p className="mt-2 text-[12.5px] leading-relaxed text-slate-600">
               {report.architectureCritique.summary}
             </p>
             {report.architectureCritique.missingComponents.length ? (
               <>
-                <p className="mt-2.5 font-mono text-[10.5px] uppercase tracking-wider text-red-500/70">
+                <p className="mt-2.5 font-mono text-[10.5px] uppercase tracking-wider text-red-600/70">
                   Missing components
                 </p>
                 <ul className="mt-1.5 space-y-0.5">
                   {report.architectureCritique.missingComponents.map(
                     (c, i) => (
-                      <li key={i} className="text-[12px] text-zinc-500">
+                      <li key={i} className="text-[12px] text-slate-500">
                         • {c}
                       </li>
                     ),
@@ -246,12 +246,12 @@ export function EvaluationReportView({ sessionId }: { sessionId: string }) {
             ) : null}
             {report.architectureCritique.risks.length ? (
               <>
-                <p className="mt-3 font-mono text-[10.5px] uppercase tracking-wider text-amber-500/70">
+                <p className="mt-3 font-mono text-[10.5px] uppercase tracking-wider text-amber-600/70">
                   Risks
                 </p>
                 <ul className="mt-1.5 space-y-0.5">
                   {report.architectureCritique.risks.map((r, i) => (
-                    <li key={i} className="text-[12px] text-zinc-500">
+                    <li key={i} className="text-[12px] text-slate-500">
                       • {r}
                     </li>
                   ))}

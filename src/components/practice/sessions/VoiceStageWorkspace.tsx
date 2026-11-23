@@ -6,6 +6,7 @@ import { AiOrb } from "@/components/practice/AiOrb";
 import { SessionBottomBar } from "@/components/practice/SessionBottomBar";
 import { IntegrationCheckScreen } from "@/components/ui/IntegrationCheckScreen";
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import { useInterviewSession } from "@/lib/hooks/useInterviewSession";
 import {
   VOICE_STAGE_QUESTION_BANK,
@@ -25,6 +26,9 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
   const [transcriptOpen, setTranscriptOpen] = React.useState(false);
   const [questionIndex, setQuestionIndex] = React.useState(0);
   const [overrideQuestion, setOverrideQuestion] = React.useState<string | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = React.useState(false);
+  const [feedback, setFeedback] = React.useState("");
+  const [feedbackSent, setFeedbackSent] = React.useState(false);
   const bank = VOICE_STAGE_QUESTION_BANK[track] ?? [
     VOICE_STAGE_QUESTIONS[track] ?? "Walk me through your approach.",
   ];
@@ -47,7 +51,7 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
 
   if (s.loading || !s.config) {
     return (
-      <div className="flex h-screen items-center justify-center font-mono text-[11px] text-zinc-500">
+      <div className="flex h-screen items-center justify-center font-mono text-[11px] text-slate-500">
         Loading session…
       </div>
     );
@@ -56,10 +60,14 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex h-12 shrink-0 items-center justify-between border-b border-line px-5">
-        <span className="text-[14px] font-semibold tracking-tight text-zinc-100">CareerLoop</span>
+        <span className="text-[14px] font-semibold tracking-tight text-slate-900">CareerLoop</span>
         <button
           type="button"
-          className="rounded-full border border-line px-3 py-1.5 text-[11px] text-zinc-500 transition hover:border-line-strong hover:text-zinc-200"
+          onClick={() => {
+            setFeedbackSent(false);
+            setFeedbackOpen(true);
+          }}
+          className="rounded-full border border-line px-3 py-1.5 text-[11px] text-slate-500 transition hover:border-line-strong hover:bg-slate-100 hover:text-slate-900"
         >
           Send feedback
         </button>
@@ -70,7 +78,7 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
             The interviewer asks…
           </p>
-          <h1 className="mt-5 max-w-2xl text-[28px] font-medium leading-tight tracking-tight text-zinc-100 md:text-[38px]">
+          <h1 className="mt-5 max-w-2xl text-[28px] font-medium leading-tight tracking-tight text-slate-900 md:text-[38px]">
             {question}
           </h1>
           {role ? (
@@ -109,21 +117,21 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
                   : "Click to answer"}
           </p>
           {s.tentative ? (
-            <p className="mt-4 max-w-xl text-[12px] italic text-zinc-500">{s.tentative}</p>
+            <p className="mt-4 max-w-xl text-[12px] italic text-slate-500">{s.tentative}</p>
           ) : null}
         </div>
 
         {transcriptOpen ? (
           <aside className="absolute inset-y-3 right-3 z-20 flex w-[320px] flex-col rounded-lg border border-line-strong bg-panel-2/95 shadow-2xl shadow-black/60 backdrop-blur">
             <div className="flex items-center justify-between border-b border-line px-3 py-2.5">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-400">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-slate-600">
                 Transcript
               </p>
               <button
                 type="button"
                 onClick={() => setTranscriptOpen(false)}
                 aria-label="Close transcript"
-                className="rounded p-1 text-muted hover:text-zinc-200"
+                className="rounded p-1 text-muted hover:text-slate-900"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -137,7 +145,7 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
                   <p className="font-mono text-[9px] uppercase tracking-wider text-muted">
                     {turn.speaker}
                   </p>
-                  <p className="mt-1 text-[11.5px] leading-relaxed text-zinc-400">
+                  <p className="mt-1 text-[11.5px] leading-relaxed text-slate-600">
                     {turn.spokenText || turn.text}
                     {turn.interrupted ? (
                       <span className="ml-1 text-muted">[interrupted]</span>
@@ -163,7 +171,7 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
             <button
               type="button"
               onClick={nextQuestion}
-              className="rounded-full border border-line px-3 py-1.5 text-[11px] text-zinc-500 transition hover:border-line-strong hover:text-zinc-200"
+              className="rounded-full border border-line px-3 py-1.5 text-[11px] text-slate-500 transition hover:border-line-strong hover:text-slate-900"
             >
               Try a different question
             </button>
@@ -179,8 +187,8 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
             className={cn(
               "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] transition",
               transcriptOpen
-                ? "border-zinc-600 text-zinc-200"
-                : "border-line text-zinc-500 hover:border-line-strong hover:text-zinc-200",
+                ? "border-slate-300 text-slate-900"
+                : "border-line text-slate-500 hover:border-line-strong hover:text-slate-900",
             )}
           >
             <FileText className="h-3.5 w-3.5" />
@@ -190,15 +198,15 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
       />
 
       {!s.begun ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-lg border border-line-strong bg-panel-2 p-5 text-center shadow-2xl shadow-black/70">
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-lg border border-line-strong bg-panel-2 p-5 text-center shadow-2xl shadow-slate-900/15">
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
               Practice with AI
             </p>
-            <h2 className="mt-2 text-[18px] font-medium tracking-tight text-zinc-100">
+            <h2 className="mt-2 text-[18px] font-medium tracking-tight text-slate-900">
               {question}
             </h2>
-            <p className="mt-2 text-[12px] leading-relaxed text-zinc-500">
+            <p className="mt-2 text-[12px] leading-relaxed text-slate-500">
               A {s.config.durationSec / 60}-minute voice conversation. Speak naturally; the
               interviewer will follow up and provide feedback when you submit.
             </p>
@@ -212,6 +220,69 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
       {s.showCheck ? (
         <IntegrationCheckScreen onDone={() => s.setShowCheck(false)} />
       ) : null}
+
+      <Dialog
+        open={feedbackOpen}
+        onOpenChange={setFeedbackOpen}
+        title="Send feedback"
+        description="Tell us what felt wrong or missing in this session. Feedback is saved locally in this browser."
+        footer={
+          feedbackSent ? (
+            <Button onClick={() => setFeedbackOpen(false)}>Done</Button>
+          ) : (
+            <>
+              <Button variant="ghost" onClick={() => setFeedbackOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                disabled={!feedback.trim()}
+                onClick={() => {
+                  try {
+                    const existing = JSON.parse(
+                      window.localStorage.getItem("careerloop-feedback") ?? "[]",
+                    ) as unknown[];
+                    existing.push({
+                      track,
+                      sessionId: id,
+                      message: feedback.trim(),
+                      at: Date.now(),
+                    });
+                    window.localStorage.setItem(
+                      "careerloop-feedback",
+                      JSON.stringify(existing),
+                    );
+                  } catch {
+                    window.localStorage.setItem(
+                      "careerloop-feedback",
+                      JSON.stringify([
+                        { track, sessionId: id, message: feedback.trim(), at: Date.now() },
+                      ]),
+                    );
+                  }
+                  setFeedback("");
+                  setFeedbackSent(true);
+                }}
+              >
+                Submit feedback
+              </Button>
+            </>
+          )
+        }
+      >
+        {feedbackSent ? (
+          <p className="text-[12px] text-emerald-700">Thanks — your feedback was saved.</p>
+        ) : (
+          <textarea
+            autoFocus
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            rows={5}
+            placeholder="What could be better?"
+            aria-label="Feedback"
+            className="w-full rounded-md border border-line-strong bg-panel px-3 py-2 text-[12px] text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400"
+          />
+        )}
+      </Dialog>
     </div>
   );
 }

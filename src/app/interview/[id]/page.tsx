@@ -21,7 +21,7 @@ export default function InterviewPage() {
   if (session.loading || !id) {
     return (
       <div className="flex h-full items-center justify-center">
-        <span className="flex items-center gap-2 font-mono text-[11px] text-zinc-500">
+        <span className="flex items-center gap-2 font-mono text-[11px] text-slate-500">
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
           Loading session…
         </span>
@@ -32,11 +32,14 @@ export default function InterviewPage() {
   if (session.missing || !session.config) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3">
-        <p className="text-[13px] text-zinc-400">
+        <p className="text-[13px] text-slate-600">
           This session was not found on this device.
         </p>
-        <Link href="/practice" className="text-[12px] text-zinc-500 underline">
-          Back to practice
+        <Link
+          href="/new?mode=ai"
+          className="text-[12px] text-slate-500 underline"
+        >
+          Start a new session
         </Link>
       </div>
     );
@@ -94,31 +97,31 @@ export default function InterviewPage() {
       </div>
 
       {!session.begun ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md animate-fade-in rounded-lg border border-line-strong bg-panel-2 p-5 shadow-2xl shadow-black/70">
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md animate-fade-in rounded-lg border border-line-strong bg-panel-2 p-5 shadow-2xl shadow-slate-900/15">
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
               Pre-flight
             </p>
-            <h2 className="mt-2 text-[19px] font-medium tracking-tight text-zinc-100">
+            <h2 className="mt-2 text-[19px] font-medium tracking-tight text-slate-900">
               {scenario.title}
             </h2>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-500">
+            <p className="mt-1.5 text-[12px] leading-relaxed text-slate-500">
               {scenario.prompt}
             </p>
 
             <ul className="mt-4 space-y-2 border-t border-line pt-3">
-              <li className="flex items-center gap-2 text-[11.5px] text-zinc-400">
-                <Timer className="h-3.5 w-3.5 text-zinc-600" />
+              <li className="flex items-center gap-2 text-[11.5px] text-slate-600">
+                <Timer className="h-3.5 w-3.5 text-slate-500" />
                 {Math.round(session.config.durationSec / 60)} minute timed session
               </li>
-              <li className="flex items-center gap-2 text-[11.5px] text-zinc-400">
-                <Mic className="h-3.5 w-3.5 text-zinc-600" />
+              <li className="flex items-center gap-2 text-[11.5px] text-slate-600">
+                <Mic className="h-3.5 w-3.5 text-slate-500" />
                 {session.config.format === "voice"
                   ? "Microphone required — headphones recommended"
                   : "Text-only — no microphone used"}
               </li>
-              <li className="flex items-center gap-2 text-[11.5px] text-zinc-400">
-                <ShieldCheck className="h-3.5 w-3.5 text-zinc-600" />
+              <li className="flex items-center gap-2 text-[11.5px] text-slate-600">
+                <ShieldCheck className="h-3.5 w-3.5 text-slate-500" />
                 Strict mode — no hints, no coaching
               </li>
             </ul>
@@ -126,7 +129,7 @@ export default function InterviewPage() {
             <Button size="lg" className="mt-5 w-full" onClick={session.begin}>
               {session.config.format === "voice" ? "Enable mic & begin" : "Begin interview"}
             </Button>
-            <p className="mt-2 text-center font-mono text-[9.5px] text-zinc-600">
+            <p className="mt-2 text-center font-mono text-[9.5px] text-slate-500">
               The clock starts when you begin.
             </p>
           </div>

@@ -1,6 +1,11 @@
 import type { Content } from "@google/genai";
 import { buildInterviewStateBlock, type FsmSnapshot } from "@/lib/interview/fsm";
-import { interviewerSystemPrompt } from "@/lib/interview/prompts";
+import {
+  interviewerSystemPrompt,
+  isTrackInterview,
+  openingQuestionForTrack,
+  trackInterviewerPrompt,
+} from "@/lib/interview/prompts";
 import { getScenario } from "@/lib/interview/scenarios";
 import {
   ApiError,
@@ -18,6 +23,7 @@ interface TurnBody {
   canvasSummary?: string;
   directive?: string;
   userMessage?: string;
+  track?: string;
 }
 
 export async function POST(req: Request) {
@@ -62,13 +68,16 @@ export async function POST(req: Request) {
 
   const canvas = body.canvasSummary?.trim() || "[ARCHITECTURE CANVAS]\n(empty)";
 
+  const trackInterview = isTrackInterview(body.track);
   const injectionParts = [
     stateBlock,
     decisionLog,
     canvas,
     userMessage
       ? `[CANDIDATE SAID]\n${userMessage}`
-      : "[SYSTEM]\nThe interview is starting. Open with a short greeting and your first requirements question.",
+      : trackInterview
+        ? `[SYSTEM]\nThe interview is starting. Open with a short greeting, then ask: ${openingQuestionForTrack(body.track as Parameters<typeof openingQuestionForTrack>[0])}`
+        : "[SYSTEM]\nThe interview is starting. Open with a short greeting and your first requirements question.",
   ];
 
   const injection = injectionParts.join("\n\n");
@@ -103,7 +112,9 @@ export async function POST(req: Request) {
             model,
             contents,
             config: {
-              systemInstruction: interviewerSystemPrompt(scenario),
+              systemInstruction: trackInterview
+                ? trackInterviewerPrompt(body.track as Parameters<typeof trackInterviewerPrompt>[0])
+                : interviewerSystemPrompt(scenario),
               temperature: 0.85,
               topP: 0.9,
               maxOutputTokens: 300,

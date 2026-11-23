@@ -12,7 +12,22 @@ import { cn } from "@/lib/utils";
 type Tab = "question" | "hints" | "solution" | "transcript";
 type ConsoleTab = "output" | "tests";
 
-const STARTER_CODE = `class ListNode:
+const STARTER_CODE = {
+  javascript: `// Linked list node: { val, next }
+function hasCycle(head) {
+  // debug your code below
+  let slow = head;
+  let fast = head;
+
+  while (fast && fast.next) {
+    slow = slow.next;
+    fast = fast.next.next;
+    if (slow === fast) return true;
+  }
+  return false;
+}
+`,
+  python: `class ListNode:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
@@ -30,7 +45,11 @@ class Solution:
                 return True
 
         return False
-`;
+`,
+};
+
+type Language = keyof typeof STARTER_CODE;
+type TestResult = { name: string; pass: boolean | null; detail: string };
 
 const HINTS = [
   "Start with the brute-force approach: store every node you visit in a set.",
@@ -53,34 +72,129 @@ const TEST_CASES = [
 export function CodingWorkspace({ id }: { id: string }) {
   const s = useInterviewSession(id);
   const [tab, setTab] = React.useState<Tab>("question");
-  const [code, setCode] = React.useState(STARTER_CODE);
+  const [language, setLanguage] = React.useState<Language>("javascript");
+  const [code, setCode] = React.useState(STARTER_CODE.javascript);
   const [consoleOpen, setConsoleOpen] = React.useState(true);
   const [consoleTab, setConsoleTab] = React.useState<ConsoleTab>("output");
   const [output, setOutput] = React.useState("");
-  const [running, setRunning] = React.useState(false);
+  const [testResults, setTestResults] = React.useState<TestResult[]>([]);
+  const [testNotice, setTestNotice] = React.useState("");
 
   if (s.loading || !s.config) {
     return (
-      <div className="flex h-screen items-center justify-center font-mono text-[11px] text-zinc-500">
+      <div className="flex h-screen items-center justify-center font-mono text-[11px] text-slate-500">
         Loading workspace…
       </div>
     );
   }
 
+  const changeLanguage = (next: Language) => {
+    setLanguage(next);
+    setCode(STARTER_CODE[next]);
+    setOutput("");
+    setTestResults([]);
+    setTestNotice("");
+  };
+
+  const resetEverything = () => {
+    setTab("question");
+    setCode(STARTER_CODE[language]);
+    setOutput("");
+    setTestResults([]);
+    setTestNotice("");
+  };
+
   const runCode = () => {
-    setRunning(true);
     setConsoleOpen(true);
     setConsoleTab("output");
-    setOutput("$ python solution.py\nProgram finished with exit code 0.");
-    setRunning(false);
+    if (language === "python") {
+      const opens = (code.match(/[([{]/g) ?? []).length;
+      const closes = (code.match(/[)\]}]/g) ?? []).length;
+      setOutput(
+        opens === closes
+          ? "Python is reviewed statically in this browser (no Python runtime bundled).\nStatic check passed: brackets balanced. Switch to JavaScript to execute code."
+          : `Static check failed: ${opens} opening vs ${closes} closing brackets.`,
+      );
+      return;
+    }
+    const logs: string[] = [];
+    try {
+      const fakeConsole = {
+        log: (...args: unknown[]) =>
+          logs.push(args.map((a) => (typeof a === "string" ? a : JSON.stringify(a))).join(" ")),
+        error: (...args: unknown[]) =>
+          logs.push(`ERROR ${args.map(String).join(" ")}`),
+      };
+      new Function("console", `"use strict";\n${code}`)(fakeConsole);
+      setOutput(
+        logs.length
+          ? logs.join("\n")
+          : "Program finished with no console output. Use console.log(...) to inspect values.",
+      );
+    } catch (error) {
+      setOutput(`Runtime error: ${error instanceof Error ? error.message : String(error)}`);
+    }
   };
 
   const runTests = () => {
-    setRunning(true);
     setConsoleOpen(true);
     setConsoleTab("tests");
-    setOutput("");
-    setRunning(false);
+    if (language === "python") {
+      setTestResults([]);
+      setTestNotice("Python tests need a local Python runtime. Switch to JavaScript to execute the test suite in the browser.");
+      return;
+    }
+    setTestNotice("");
+    try {
+      const resolve = new Function(
+        `${code}\n;return typeof hasCycle === "function" ? hasCycle : null;`,
+      ) as () => ((head: { val: number; next?: unknown } | null) => boolean) | null;
+      const hasCycle = resolve();
+      if (!hasCycle) {
+        setTestNotice("Define a function named hasCycle(head) to run the test suite.");
+        setTestResults([]);
+        return;
+      }
+      const makeList = (
+        values: number[],
+        cycleIndex = -1,
+      ): { val: number; next: unknown } | null => {
+        const nodes = values.map((val) => ({ val, next: undefined as unknown }));
+        nodes.forEach((node, i) => {
+          (node as { next?: unknown }).next = nodes[i + 1] ?? null;
+        });
+        if (cycleIndex >= 0) {
+          (nodes[nodes.length - 1] as { next?: unknown }).next = nodes[cycleIndex];
+        }
+        return nodes[0] ?? null;
+      };
+      const cases: { name: string; head: ReturnType<typeof makeList>; expected: boolean }[] = [
+        { name: TEST_CASES[0], head: makeList([3, 2, 0, -4], 1), expected: true },
+        { name: TEST_CASES[1], head: makeList([1, 2, 3], 0), expected: true },
+        { name: TEST_CASES[2], head: makeList([1, 2, 3]), expected: false },
+        { name: TEST_CASES[3], head: null, expected: false },
+        { name: TEST_CASES[4], head: makeList([1]), expected: false },
+        { name: TEST_CASES[5], head: makeList([1], 0), expected: true },
+      ];
+      const results = cases.map((c) => {
+        let actual = false;
+        let error = "";
+        try {
+          actual = Boolean(hasCycle(c.head as never));
+        } catch (e) {
+          error = e instanceof Error ? e.message : String(e);
+        }
+        return {
+          name: c.name,
+          pass: error ? null : actual === c.expected,
+          detail: error || `expected ${c.expected}, got ${actual}`,
+        };
+      });
+      setTestResults(results);
+    } catch (error) {
+      setTestNotice(`Could not run tests: ${error instanceof Error ? error.message : String(error)}`);
+      setTestResults([]);
+    }
   };
 
   return (
@@ -95,19 +209,21 @@ export function CodingWorkspace({ id }: { id: string }) {
                 onClick={() => setTab(key)}
                 className={cn(
                   "relative h-11 text-[11px] capitalize transition",
-                  tab === key ? "text-zinc-100" : "text-muted hover:text-zinc-300",
+                  tab === key ? "text-slate-900" : "text-muted hover:text-slate-700",
                 )}
               >
                 {key}
                 {tab === key ? (
-                  <span className="absolute inset-x-0 bottom-0 h-px bg-zinc-300" />
+                  <span className="absolute inset-x-0 bottom-0 h-px bg-slate-200" />
                 ) : null}
               </button>
             ))}
             <button
               type="button"
               aria-label="Reset question"
-              className="ml-auto rounded p-1 text-muted hover:text-zinc-300"
+              title="Reset question and code"
+              onClick={resetEverything}
+              className="ml-auto rounded p-1 text-muted hover:bg-slate-100 hover:text-slate-700"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
@@ -116,15 +232,15 @@ export function CodingWorkspace({ id }: { id: string }) {
           <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
             {tab === "question" ? (
               <div>
-                <h2 className="text-[18px] font-medium tracking-tight text-zinc-100">
+                <h2 className="text-[18px] font-medium tracking-tight text-slate-900">
                   Linked List Cycle
                 </h2>
-                <p className="mt-3 text-[12px] leading-relaxed text-zinc-400">
+                <p className="mt-3 text-[12px] leading-relaxed text-slate-600">
                   Given <Code>head</Code>, the head of a linked list, determine if the linked
                   list has a cycle in it. Return <Code>true</Code> if there is a cycle in the
                   list, otherwise return <Code>false</Code>.
                 </p>
-                <p className="mt-3 text-[12px] leading-relaxed text-zinc-500">
+                <p className="mt-3 text-[12px] leading-relaxed text-slate-500">
                   A node is considered cyclic if there is some node in the list that can be
                   reached again by continuously following the <Code>next</Code> pointer.
                 </p>
@@ -146,7 +262,7 @@ export function CodingWorkspace({ id }: { id: string }) {
                 </p>
                 <ol className="mt-3 space-y-3">
                   {HINTS.map((hint, index) => (
-                    <li key={hint} className="flex gap-2.5 text-[12px] leading-relaxed text-zinc-400">
+                    <li key={hint} className="flex gap-2.5 text-[12px] leading-relaxed text-slate-600">
                       <span className="font-mono text-[10px] text-muted">
                         {String(index + 1).padStart(2, "0")}
                       </span>
@@ -162,7 +278,7 @@ export function CodingWorkspace({ id }: { id: string }) {
                 <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-muted">
                   Interviewer notes
                 </p>
-                <p className="mt-3 whitespace-pre-wrap text-[12px] leading-relaxed text-zinc-400">
+                <p className="mt-3 whitespace-pre-wrap text-[12px] leading-relaxed text-slate-600">
                   {s.decisionLog.trim() ||
                     "The interviewer's running assessment will appear here as you work through the problem."}
                 </p>
@@ -179,7 +295,7 @@ export function CodingWorkspace({ id }: { id: string }) {
                     <p className="font-mono text-[9px] uppercase tracking-wider text-muted">
                       {turn.speaker}
                     </p>
-                    <p className="mt-1 text-[12px] leading-relaxed text-zinc-400">
+                    <p className="mt-1 text-[12px] leading-relaxed text-slate-600">
                       {turn.spokenText || turn.text}
                     </p>
                   </div>
@@ -192,27 +308,33 @@ export function CodingWorkspace({ id }: { id: string }) {
           </div>
         </section>
 
-        <section className="relative flex min-w-0 flex-1 flex-col bg-[#0a0a0d]">
+        <section className="relative flex min-w-0 flex-1 flex-col bg-panel">
           <div className="flex h-10 shrink-0 items-center justify-between border-b border-line px-3">
+            <label className="flex items-center gap-1.5 rounded border border-line px-2 py-1 text-[11px] text-slate-600">
+              <span className="sr-only">Language</span>
+              <select
+                value={language}
+                onChange={(e) => changeLanguage(e.target.value as Language)}
+                className="bg-transparent text-slate-700 outline-none"
+              >
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+              </select>
+              <ChevronDown className="h-3 w-3 text-muted" />
+            </label>
             <button
               type="button"
-              className="flex items-center gap-1.5 rounded border border-line px-2 py-1 text-[11px] text-zinc-400 hover:border-line-strong"
-            >
-              Python <ChevronDown className="h-3 w-3 text-muted" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setCode(STARTER_CODE)}
-              className="text-[11px] text-muted transition hover:text-zinc-300"
+              onClick={() => setCode(STARTER_CODE[language])}
+              className="text-[11px] text-muted transition hover:text-slate-700"
             >
               Reset
             </button>
           </div>
 
           <div className="flex min-h-0 flex-1 overflow-auto font-mono text-[12px] leading-[1.65]">
-            <div className="sticky left-0 z-10 w-11 shrink-0 select-none border-r border-line/60 bg-[#0a0a0d] py-3 text-right">
+            <div className="sticky left-0 z-10 w-11 shrink-0 select-none border-r border-line/60 bg-panel-2 py-3 text-right">
               {code.split("\n").map((_, i) => (
-                <div key={i} className="pr-2.5 text-zinc-500">
+                <div key={i} className="pr-2.5 text-slate-500">
                   {i + 1}
                 </div>
               ))}
@@ -222,7 +344,7 @@ export function CodingWorkspace({ id }: { id: string }) {
               onChange={(e) => setCode(e.target.value)}
               spellCheck={false}
               aria-label="Code editor"
-              className="min-h-full min-w-full flex-1 resize-none bg-transparent py-3 pl-3 pr-6 text-zinc-300 outline-none"
+              className="min-h-full min-w-full flex-1 resize-none bg-transparent py-3 pl-3 pr-6 text-slate-900 outline-none"
             />
           </div>
 
@@ -236,42 +358,57 @@ export function CodingWorkspace({ id }: { id: string }) {
                     onClick={() => setConsoleTab(key)}
                     className={cn(
                       "relative h-9 text-[11px] capitalize transition",
-                      consoleTab === key ? "text-zinc-100" : "text-muted hover:text-zinc-300",
+                      consoleTab === key ? "text-slate-900" : "text-muted hover:text-slate-700",
                     )}
                   >
                     {key === "output" ? "Output" : "Test Results"}
                     {consoleTab === key ? (
-                      <span className="absolute inset-x-0 bottom-0 h-px bg-zinc-300" />
+                      <span className="absolute inset-x-0 bottom-0 h-px bg-slate-200" />
                     ) : null}
                   </button>
                 ))}
                 <button
                   type="button"
                   onClick={() => setConsoleOpen(false)}
-                  className="ml-auto text-[10.5px] text-muted hover:text-zinc-300"
+                  className="ml-auto text-[10.5px] text-muted hover:text-slate-700"
                 >
                   Hide console
                 </button>
               </div>
               <div className="h-[calc(100%-36px)] overflow-auto px-3 py-2 font-mono text-[11px]">
                 {consoleTab === "output" ? (
-                  <pre className="whitespace-pre-wrap text-zinc-500">
+                  <pre className="whitespace-pre-wrap text-slate-500">
                     {output || "No output yet. Run your code to see results."}
                   </pre>
                 ) : (
                   <div>
-                    <p className="text-zinc-500">Run time: 58 ms</p>
+                    {testNotice ? (
+                      <p className="mb-2 text-amber-700">{testNotice}</p>
+                    ) : null}
+                    {testResults.length === 0 && !testNotice ? (
+                      <p className="text-slate-500">
+                        Run the test suite to see results for each case.
+                      </p>
+                    ) : null}
                     <div className="mt-2 space-y-1">
-                      {TEST_CASES.map((test, index) => (
+                      {testResults.map((result) => (
                         <div
-                          key={test}
-                          className="flex items-center gap-2 rounded px-2 py-1 text-zinc-500 hover:bg-zinc-900/60"
+                          key={result.name}
+                          className="flex items-start gap-2 rounded px-2 py-1 text-slate-600 hover:bg-slate-100/60"
                         >
-                          <span className="text-zinc-500">›</span>
-                          <span className="text-amber-500/80">●</span>
-                          <span>
-                            Test case {index + 1}: {test}
+                          <span
+                            className={
+                              result.pass === true
+                                ? "text-emerald-700"
+                                : result.pass === false
+                                  ? "text-red-600"
+                                  : "text-amber-600"
+                            }
+                          >
+                            {result.pass === true ? "✓" : result.pass === false ? "✕" : "●"}
                           </span>
+                          <span className="flex-1">{result.name}</span>
+                          <span className="text-slate-400">{result.detail}</span>
                         </div>
                       ))}
                     </div>
@@ -283,14 +420,14 @@ export function CodingWorkspace({ id }: { id: string }) {
             <button
               type="button"
               onClick={() => setConsoleOpen(true)}
-              className="flex h-8 shrink-0 items-center justify-center gap-1.5 border-t border-line bg-panel text-[10.5px] text-muted hover:text-zinc-300"
+              className="flex h-8 shrink-0 items-center justify-center gap-1.5 border-t border-line bg-panel text-[10.5px] text-muted hover:text-slate-700"
             >
               <Terminal className="h-3 w-3" /> Show console
             </button>
           )}
 
           <div className="pointer-events-none absolute right-3 top-14 z-20 flex flex-col items-end gap-2">
-            <div className="pointer-events-auto flex h-[86px] w-[160px] items-center justify-center rounded-xl border border-line-strong bg-panel-2/95 shadow-xl shadow-black/50 backdrop-blur">
+            <div className="pointer-events-auto flex h-[86px] w-[160px] items-center justify-center rounded-xl border border-line-strong bg-panel-2/95 shadow-xl shadow-slate-900/10 backdrop-blur">
               <AiOrb
                 active={s.begun}
                 speaking={s.speechState === "speaking"}
@@ -306,10 +443,10 @@ export function CodingWorkspace({ id }: { id: string }) {
         onSubmit={() => void s.handleEnd()}
         right={
           <>
-            <Button variant="subtle" size="sm" onClick={runCode} disabled={running}>
+            <Button variant="subtle" size="sm" onClick={runCode}>
               Run code
             </Button>
-            <Button variant="subtle" size="sm" onClick={runTests} disabled={running}>
+            <Button variant="subtle" size="sm" onClick={runTests}>
               Run tests
             </Button>
           </>
@@ -317,15 +454,15 @@ export function CodingWorkspace({ id }: { id: string }) {
       />
 
       {!s.begun ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-lg border border-line-strong bg-panel-2 p-5 shadow-2xl shadow-black/70">
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-lg border border-line-strong bg-panel-2 p-5 shadow-2xl shadow-slate-900/15">
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
               Practice with AI
             </p>
-            <h2 className="mt-2 text-[19px] font-medium tracking-tight text-zinc-100">
+            <h2 className="mt-2 text-[19px] font-medium tracking-tight text-slate-900">
               Data Structures &amp; Algorithms
             </h2>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-500">
+            <p className="mt-1.5 text-[12px] leading-relaxed text-slate-500">
               A 20-minute coding interview. The AI interviewer will ask follow-ups and provide
               feedback when you submit.
             </p>
@@ -345,7 +482,7 @@ export function CodingWorkspace({ id }: { id: string }) {
 
 function Code({ children }: { children: React.ReactNode }) {
   return (
-    <code className="rounded bg-zinc-900 px-1 py-0.5 font-mono text-[11px] text-zinc-300">
+    <code className="rounded bg-slate-100 px-1 py-0.5 font-mono text-[11px] text-slate-700">
       {children}
     </code>
   );
@@ -359,11 +496,11 @@ function CycleDiagram({ label, cyclic }: { label: string; cyclic?: boolean }) {
       <div className="mt-3 flex items-center justify-center gap-1.5">
         {values.map((value, index) => (
           <React.Fragment key={value}>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 font-mono text-[10px] text-zinc-300">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 bg-slate-100 font-mono text-[10px] text-slate-700">
               {value}
             </span>
             {index < values.length - 1 ? (
-              <span className="text-[10px] text-zinc-500">→</span>
+              <span className="text-[10px] text-slate-500">→</span>
             ) : null}
           </React.Fragment>
         ))}
@@ -384,7 +521,7 @@ function CycleDiagram({ label, cyclic }: { label: string; cyclic?: boolean }) {
           </defs>
         </svg>
       ) : (
-        <div className="mt-1 flex items-center gap-1 pl-[70px] font-mono text-[11px] text-zinc-500">
+        <div className="mt-1 flex items-center gap-1 pl-[70px] font-mono text-[11px] text-slate-500">
           → <span className="text-muted">None</span>
         </div>
       )}

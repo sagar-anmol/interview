@@ -81,8 +81,8 @@ export function VoiceInputDock({
           className={cn(
             "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-colors",
             muted
-              ? "border-line-strong bg-zinc-900 text-zinc-500"
-              : "border-zinc-600 bg-zinc-800/80 text-zinc-100",
+              ? "border-line-strong bg-slate-100 text-slate-500"
+              : "border-slate-300 bg-slate-200/80 text-slate-900",
             speechState === "listening" && !muted && "border-red-500/50",
             disabled && "opacity-40",
           )}
@@ -125,13 +125,13 @@ export function VoiceInputDock({
               }
             }}
             placeholder="Speak your answer or type here…"
-            className="h-9 w-full rounded-md border border-line bg-[#0a0a0d] pl-2.5 pr-9 text-[12.5px] text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-zinc-600 disabled:opacity-50"
+            className="h-9 w-full rounded-md border border-line bg-panel pl-2.5 pr-9 text-[12.5px] text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400 disabled:opacity-50"
           />
           <button
             type="button"
             onClick={send}
             disabled={!value.trim() || disabled}
-            className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200 disabled:opacity-30"
+            className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded text-slate-500 hover:bg-slate-200 hover:text-slate-900 disabled:opacity-30"
             aria-label="Send message"
           >
             <ArrowUp className="h-3.5 w-3.5" />
@@ -145,8 +145,8 @@ export function VoiceInputDock({
           className={cn(
             "flex h-9 w-9 shrink-0 items-center justify-center rounded-md border transition-colors",
             canInterrupt
-              ? "border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20"
-              : "border-line bg-transparent text-zinc-600",
+              ? "border-red-500/30 bg-red-600/10 text-red-600 hover:bg-red-600/20"
+              : "border-line bg-transparent text-slate-500",
           )}
           aria-label="Interrupt interviewer"
           title="Interrupt (Esc)"
@@ -156,7 +156,7 @@ export function VoiceInputDock({
       </div>
 
       <div className="mt-1.5 flex items-center justify-between px-0.5">
-        <p className="font-mono text-[9.5px] tracking-tight text-zinc-700">
+        <p className="font-mono text-[9.5px] tracking-tight text-slate-400">
           {disabled
             ? "Session ended"
             : vadMode === "ptt"
@@ -164,7 +164,7 @@ export function VoiceInputDock({
               : "Speak to interrupt · Esc to interrupt"}
         </p>
         {micLevel > 0.02 && !muted ? (
-          <span className="font-mono text-[9.5px] text-zinc-700">
+          <span className="font-mono text-[9.5px] text-slate-400">
             MIC {Math.round(micLevel * 100)}
           </span>
         ) : null}

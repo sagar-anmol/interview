@@ -60,10 +60,10 @@ export function SystemNode({ id, data, selected }: NodeProps<SystemNodeType>) {
   return (
     <div
       className={cn(
-        "group relative w-[172px] rounded-md border bg-[#0f0f13] px-3 py-2.5 shadow-lg shadow-black/40 transition-colors",
+        "group relative w-[172px] rounded-md border bg-white px-3 py-2.5 shadow-lg shadow-slate-900/10 transition-colors",
         selected
-          ? "border-zinc-400/70 ring-1 ring-zinc-400/20"
-          : "border-[#2a2a31] hover:border-[#3f3f47]",
+          ? "border-blue-500 ring-1 ring-blue-200"
+          : "border-line-strong hover:border-slate-400",
       )}
     >
       <Handle
@@ -90,7 +90,7 @@ export function SystemNode({ id, data, selected }: NodeProps<SystemNodeType>) {
       />
 
       <div className="flex items-center gap-2">
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-[#26262c] bg-[#141419] text-zinc-500">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-line bg-panel-2 text-slate-600">
           <Icon className="h-3 w-3" />
         </span>
         {editing ? (
@@ -107,11 +107,11 @@ export function SystemNode({ id, data, selected }: NodeProps<SystemNodeType>) {
               }
               e.stopPropagation();
             }}
-            className="w-full bg-transparent text-[12.5px] font-medium text-zinc-100 outline-none"
+            className="w-full bg-transparent text-[12.5px] font-medium text-slate-900 outline-none"
           />
         ) : (
           <span
-            className="truncate text-[12.5px] font-medium tracking-tight text-zinc-200"
+            className="truncate text-[12.5px] font-medium tracking-tight text-slate-900"
             onDoubleClick={() => {
               setDraft(data.label);
               setEditing(true);
@@ -124,7 +124,7 @@ export function SystemNode({ id, data, selected }: NodeProps<SystemNodeType>) {
       </div>
 
       {data.sublabel ? (
-        <p className="mt-1 truncate pl-8 font-mono text-[10px] tracking-tight text-zinc-500">
+        <p className="mt-1 truncate pl-8 font-mono text-[10px] tracking-tight text-slate-500">
           {data.sublabel}
         </p>
       ) : null}

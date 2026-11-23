@@ -6,16 +6,14 @@ import {
   onIntegrationChange,
   type IntegrationState,
 } from "@/lib/integration/integrationManager";
-import { isPiperReady } from "@/lib/tts/piperTts";
-import { DEFAULT_VOICE_ID } from "@/lib/tts/voices";
 import { cn } from "@/lib/utils";
 
 const MB = 1_048_576;
 
 /**
  * Pre-flight screen shown before an interview starts. Everything it displays
- * is real: the bytes below came off the network, and the Piper weights stay
- * in the browser (OPFS) after the first visit.
+ * is real: the bytes below came off the network and stay cached in this
+ * browser after the first visit.
  */
 export function IntegrationCheckScreen({ onDone }: { onDone: () => void }) {
   const [state, setState] = React.useState<IntegrationState>(getIntegrationState);
@@ -64,14 +62,14 @@ export function IntegrationCheckScreen({ onDone }: { onDone: () => void }) {
   const stages = [
     {
       id: "vad",
-      label: "Silero VAD + ONNX runtime",
+      label: "Speech detection",
       detail: `${(state.vadLoaded / MB).toFixed(1)} / ${(state.vadTotal / MB).toFixed(1)} MB`,
       complete: state.vadLoaded >= state.vadTotal && state.phase !== "vad",
       size: state.vadTotal,
     },
     {
       id: "voice",
-      label: `Piper voice · ${DEFAULT_VOICE_ID}`,
+      label: "Voice model",
       detail:
         state.voiceLoaded > 0
           ? `${(state.voiceLoaded / MB).toFixed(1)} / ${(state.voiceTotal / MB).toFixed(1)} MB`
@@ -83,54 +81,47 @@ export function IntegrationCheckScreen({ onDone }: { onDone: () => void }) {
     },
     {
       id: "session",
-      label: "Inference session warm",
-      detail: state.phase === "ready" ? "cached in this browser" : state.phase === "voice" ? "held until download finishes" : "Queued",
+      label: "Ready to use",
+      detail: state.phase === "ready" ? "cached in this browser" : state.phase === "voice" ? "held until setup finishes" : "Queued",
       complete: state.done,
     },
   ];
 
-  const piperReady = isPiperReady();
-  const cached = state.done && piperReady;
-
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/85 backdrop-blur-[2px]">
-      <div className="flex max-w-lg flex-col gap-5 p-7">
+    <div className="md-modal-backdrop fixed inset-0 z-60 flex items-center justify-center bg-slate-800/25 p-4 backdrop-blur-md">
+      <div className="md-modal-panel md-pop glass-panel backdrop-blur-xl backdrop-saturate-150 flex max-w-lg flex-col gap-5 rounded-xl p-7">
         <div className="flex items-center gap-2.5">
           <span
             className={cn(
               "h-2 w-2 rounded-full",
-              state.done ? "bg-emerald-500 animate-live" : "bg-amber-400 animate-pulse",
+              state.done ? "bg-slate-700 animate-live" : "bg-slate-400 animate-pulse",
             )}
           />
-          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-300">
-            Integration check
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-slate-700">
+            Voice check
           </span>
         </div>
 
-        <h2 className="text-[19px] font-medium tracking-tight text-zinc-100">
-          {state.done
-            ? cached
-              ? "Runtime ready."
-              : "Ready — Web Speech will be used."
-            : "Warming up models…"}
+        <h2 className="text-[19px] font-medium tracking-tight text-slate-900">
+          {state.done ? "You’re ready." : "Getting things ready…"}
         </h2>
 
-        <div className="relative h-3 w-full overflow-hidden rounded-full border border-line-strong bg-zinc-950">
+        <div className="relative h-3 w-full overflow-hidden rounded-full border border-white/70 bg-white/70">
           <div
             className={cn(
               "absolute top-0 left-0 h-full rounded-full transition-[width] duration-200",
-              state.done ? "bg-emerald-400" : "bg-amber-400",
+              state.done ? "bg-slate-700" : "bg-slate-500",
             )}
             style={{ width: `${Math.max(percent, state.done ? 100 : 1)}%` }}
           />
-          <div className="absolute top-0 right-0 flex h-full items-center px-2 font-mono text-[10px] text-zinc-400">
+          <div className="absolute top-0 right-0 flex h-full items-center px-2 font-mono text-[10px] text-slate-700">
             {percent}%
           </div>
         </div>
 
-        <p className="font-mono text-[11px] text-zinc-500">
+        <p className="font-mono text-[11px] text-muted">
           {`${(phaseLoaded / MB).toFixed(1)} of ${(phaseTotal / MB).toFixed(1)} MB`}
-          {state.phase === "voice" && !state.done ? " · voice weights" : ""}
+          {state.phase === "voice" && !state.done ? " · voice model" : ""}
           {!state.done ? ` · ${seconds}s` : ""}
         </p>
 
@@ -141,21 +132,21 @@ export function IntegrationCheckScreen({ onDone }: { onDone: () => void }) {
                 className={cn(
                   "h-1.5 w-1.5 shrink-0 rounded-full",
                   stage.complete
-                    ? "bg-emerald-400"
+                    ? "bg-slate-700"
                     : stage.id === state.phase && state.phase !== "ready"
-                      ? "bg-amber-400 animate-pulse"
-                      : "bg-zinc-700",
+                      ? "bg-slate-400 animate-pulse"
+                      : "bg-slate-200",
                 )}
               />
               <span
                 className={cn(
                   "text-[12.5px]",
-                  stage.complete ? "text-zinc-200" : "text-zinc-400",
+                  stage.complete ? "text-slate-900" : "text-muted",
                 )}
               >
                 {stage.label}
               </span>
-              <span className="ml-auto font-mono text-[10.5px] text-zinc-600">
+              <span className="ml-auto font-mono text-[10.5px] text-muted">
                 {stage.detail}
               </span>
             </div>
@@ -163,22 +154,22 @@ export function IntegrationCheckScreen({ onDone }: { onDone: () => void }) {
         </div>
 
         {state.supported === false ? (
-          <p className="font-mono text-[10.5px] leading-relaxed text-amber-400/80">
+          <p className="font-mono text-[10.5px] leading-relaxed text-slate-700">
             {state.error}
           </p>
         ) : null}
 
-        <p className="text-[11.5px] leading-relaxed text-zinc-600">
+        <p className="text-[11.5px] leading-relaxed text-muted">
           {state.done
-            ? "Weights are cached in this browser's private storage, so the next interview starts immediately."
-            : "First visit downloads the speech models in the background. You can carry on — the interview will use Web Speech until the weights are warm."}
+            ? "Everything is cached in this browser, so your next interview starts right away."
+            : "First visit prepares the speech models in the background. You can carry on — the interview will start right away."}
         </p>
 
         <button
           onClick={finish}
-          className="self-start rounded border border-line-strong px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-zinc-200"
+          className="md-press self-start rounded border border-slate-300/80 bg-white/70 px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-slate-700 backdrop-blur transition-colors hover:border-slate-400 hover:bg-white/85"
         >
-          {state.done ? "Continue" : "Skip and use Web Speech"}
+          {state.done ? "Continue" : "Skip and continue"}
         </button>
       </div>
     </div>

@@ -33,28 +33,28 @@ export function TopControlBar({
   const warning = remainingSec <= 300;
 
   return (
-    <header className="flex h-12 shrink-0 items-center justify-between border-b border-line bg-[#0a0a0d] px-3">
+    <header className="flex h-12 shrink-0 items-center justify-between border-b border-line bg-panel px-3">
       <div className="flex min-w-0 items-center gap-2.5">
         <Badge
           className={
             live
-              ? "border-red-500/30 text-red-400"
-              : "border-line text-zinc-500"
+              ? "border-red-500/30 text-red-600"
+              : "border-line text-slate-500"
           }
         >
           <span
             className={
               live
-                ? "h-1.5 w-1.5 rounded-full bg-red-500 animate-live"
-                : "h-1.5 w-1.5 rounded-full bg-zinc-600"
+                ? "h-1.5 w-1.5 rounded-full bg-red-600 animate-live"
+                : "h-1.5 w-1.5 rounded-full bg-slate-400"
             }
           />
           {live ? "Live" : status === "paused" ? "Paused" : "Ended"}
         </Badge>
-        <span className="truncate font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-300">
+        <span className="truncate font-mono text-[11px] uppercase tracking-[0.14em] text-slate-700">
           System Design Interview
         </span>
-        <span className="hidden truncate text-[11px] text-zinc-600 lg:inline">
+        <span className="hidden truncate text-[11px] text-slate-500 lg:inline">
           {roleLine}
         </span>
       </div>
@@ -62,18 +62,18 @@ export function TopControlBar({
       <div className="flex items-center gap-3">
         <span
           className={`font-mono text-[15px] tabular-nums tracking-tight ${
-            warning ? "text-amber-400" : "text-zinc-200"
+            warning ? "text-amber-600" : "text-slate-900"
           }`}
         >
           {formatClock(remainingSec)}
         </span>
-        <span className="rounded border border-line bg-panel px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-zinc-400">
+        <span className="rounded border border-line bg-panel px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-600">
           {PHASE_LABEL[phase]}
         </span>
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="hidden rounded border border-line bg-panel px-2 py-0.5 font-mono text-[10px] tracking-tight text-zinc-500 xl:inline">
+        <span className="hidden rounded border border-line bg-panel px-2 py-0.5 font-mono text-[10px] tracking-tight text-slate-500 xl:inline">
           TTFA: {ttfaMs ? `${ttfaMs}ms` : "—"}
         </span>
         {status === "paused" ? (

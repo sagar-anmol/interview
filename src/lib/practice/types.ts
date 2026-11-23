@@ -4,7 +4,11 @@ export type PracticeTrack =
   | "dsa"
   | "behavioral"
   | "sql"
-  | "investment-banking";
+  | "investment-banking"
+  | "machine-learning"
+  | "frontend"
+  | "data-science"
+  | "devops";
 
 export interface TrackMeta {
   id: PracticeTrack;
@@ -12,7 +16,17 @@ export interface TrackMeta {
   shortTitle: string;
   description: string;
   durationSec: number;
-  icon: "layers" | "code" | "message" | "users" | "database" | "briefcase";
+  icon:
+    | "layers"
+    | "code"
+    | "message"
+    | "users"
+    | "database"
+    | "briefcase"
+    | "sparkles"
+    | "monitor"
+    | "activity"
+    | "cloud";
   isNew?: boolean;
 }
 
@@ -66,10 +80,44 @@ export const TRACKS: TrackMeta[] = [
     icon: "briefcase",
     isNew: true,
   },
+  {
+    id: "machine-learning",
+    title: "Machine Learning",
+    shortTitle: "ML",
+    description: "Model design, training trade-offs, evaluation and MLOps.",
+    durationSec: 20 * 60,
+    icon: "sparkles",
+    isNew: true,
+  },
+  {
+    id: "frontend",
+    title: "Frontend Engineering",
+    shortTitle: "Frontend",
+    description: "UI architecture, rendering, performance and state management.",
+    durationSec: 20 * 60,
+    icon: "monitor",
+    isNew: true,
+  },
+  {
+    id: "data-science",
+    title: "Data Science",
+    shortTitle: "Data Science",
+    description: "Experiment design, statistics, causal inference and product analytics.",
+    durationSec: 20 * 60,
+    icon: "activity",
+  },
+  {
+    id: "devops",
+    title: "DevOps & SRE",
+    shortTitle: "DevOps",
+    description: "CI/CD, observability, incident response and reliability.",
+    durationSec: 20 * 60,
+    icon: "cloud",
+  },
 ];
 
 export function getTrack(id: string | undefined): TrackMeta {
-  return TRACKS.find((t) => t.id === id) ?? TRACKS[0];
+  return TRACKS.find((t) => t.id === id) ?? TRACKS[2];
 }
 
 export type InterviewFormat = "conversation" | "record";
@@ -117,6 +165,10 @@ export const VOICE_STAGE_QUESTIONS: Record<string, string> = {
   behavioral: "Tell me about a time you disagreed with a teammate.",
   sql: "Find the top 3 customers by total order value.",
   "investment-banking": "Walk me through how you would value this company.",
+  "machine-learning": "Design a recommendation system for a large e-commerce catalog.",
+  frontend: "Architect a high-traffic dashboard with realtime updates.",
+  "data-science": "How would you measure whether a new feature improved retention?",
+  devops: "Walk me through your approach to reducing deploy failures.",
 };
 
 export const VOICE_STAGE_QUESTION_BANK: Record<string, string[]> = {
@@ -143,5 +195,29 @@ export const VOICE_STAGE_QUESTION_BANK: Record<string, string[]> = {
     "Explain the difference between DCF and comparable company analysis.",
     "How would a rise in interest rates affect a leveraged buyout?",
     "Walk me through a three-statement model.",
+  ],
+  "machine-learning": [
+    "Design a recommendation system for a large e-commerce catalog.",
+    "How would you detect and handle data drift in production?",
+    "A model has high offline AUC but poor online conversion — diagnose it.",
+    "Design an LLM-powered support assistant with evaluation and guardrails.",
+  ],
+  frontend: [
+    "Architect a high-traffic dashboard with realtime updates.",
+    "How would you improve the loading performance of a large React app?",
+    "Design a design-system component API that scales across teams.",
+    "Explain how you would debug a memory leak in a long-lived SPA.",
+  ],
+  "data-science": [
+    "How would you measure whether a new feature improved retention?",
+    "Design an A/B test for a pricing change with network effects.",
+    "Explain Simpson's paradox with a product analytics example.",
+    "How would you estimate the causal impact of a marketing campaign?",
+  ],
+  devops: [
+    "Walk me through your approach to reducing deploy failures.",
+    "Design an observability strategy for a distributed service.",
+    "How would you handle a database failover during peak traffic?",
+    "Design a CI/CD pipeline that supports safe canary releases.",
   ],
 };

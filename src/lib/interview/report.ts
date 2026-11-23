@@ -38,6 +38,7 @@ export async function generateReportFromSession(
         turns,
         decisionLog: payload.decisionLog,
         elapsedSec: elapsedSeconds(state),
+        track: payload.config.practiceMeta?.track,
       }),
     });
     if (!res.ok) {

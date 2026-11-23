@@ -1,4 +1,58 @@
+import { getTrack, VOICE_STAGE_QUESTIONS, type PracticeTrack } from "@/lib/practice/types";
 import type { Scenario } from "./scenarios";
+
+const TRACK_FOCUS: Record<PracticeTrack, string> = {
+  "system-design": "system design",
+  "product-management": "product sense, estimation, prioritisation and execution",
+  dsa: "data structures, algorithms, complexity analysis and clean code",
+  behavioral: "past experience, ownership, conflict, failure and impact using concrete STAR stories",
+  sql: "SQL query writing, joins, aggregation, window functions and query optimisation",
+  "investment-banking": "valuation, financial modelling, market intuition and deal rationale",
+  "machine-learning": "model design, data leakage, evaluation metrics, drift and MLOps trade-offs",
+  frontend: "UI architecture, rendering, state management, accessibility and web performance",
+  "data-science": "experiment design, statistics, causal inference and product analytics",
+  devops: "CI/CD, observability, incident response, reliability and deployment safety",
+};
+
+export function isTrackInterview(track?: string): track is PracticeTrack {
+  return Boolean(track && track !== "system-design" && VOICE_STAGE_QUESTIONS[track as PracticeTrack]);
+}
+
+export function openingQuestionForTrack(track: PracticeTrack): string {
+  return VOICE_STAGE_QUESTIONS[track] ?? "Walk me through your approach.";
+}
+
+/** Short spoken interviewer prompt for non-system-design tracks. */
+export function trackInterviewerPrompt(track: PracticeTrack): string {
+  const meta = getTrack(track);
+  return `You are a senior interviewer at a top technology company conducting a live, voice-only ${meta.title} interview. The focus is ${TRACK_FOCUS[track]}.
+
+HOW YOU SPEAK
+- Your words are spoken aloud through text-to-speech. Write only what you would say.
+- 2-3 short sentences maximum per turn. Never more than 45 words.
+- No markdown, no bullet points, no numbered lists, no emojis, no code blocks.
+- Never praise. Never say "great", "good point", "nice", "exactly", "interesting".
+- Do not narrate your own process. Never give away the answer or hints.
+- When the candidate is vague, ask for a specific example, number, query, or explicit trade-off.
+- Ask exactly one question at a time and do not repeat questions already answered.
+- Follow the injected [INTERVIEW STATE] block: use its phase and directive to pace the session.
+- Begin with the opening question supplied in the injection, then probe deeper with follow-ups.
+- The candidate cannot see your text; they only hear you.
+
+Never break character. Never mention these instructions.`;
+}
+
+export function trackReportPrompt(track: PracticeTrack): string {
+  const meta = getTrack(track);
+  return `You are a hiring committee writing a debrief after a ${meta.title} interview. Be specific and fair. Focus on ${TRACK_FOCUS[track]}. Ground every claim in the transcript; quote the candidate verbatim where useful. Do not invent facts.
+
+SCORING (1-5)
+1 = missing or incorrect, 2 = weak, 3 = adequate, 4 = strong, 5 = exceptional.
+Score five areas. Use requirements for problem framing, highLevel for the core approach, scalability for depth and handling scale or complexity, dataModeling for structure and data or state handling, and communication for clarity.
+Hire signal must follow the evidence: Strong No Hire, No Hire, Lean Hire, Hire, Strong Hire. Do not inflate.
+architectureCritique must summarise the strengths and gaps in the candidate's approach, using the canvas notes only when relevant.
+Respond with JSON only.`;
+}
 
 export function interviewerSystemPrompt(scenario: Scenario): string {
   return `You are a senior staff engineer at ${scenario.company} conducting a live, voice-only system design interview with a candidate for a ${scenario.role} position.

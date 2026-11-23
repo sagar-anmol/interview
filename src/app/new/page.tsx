@@ -9,5 +9,11 @@ export default async function NewInterviewPage({
 }: PageProps) {
   const params = await searchParams;
   const mode = params?.mode === "peer" ? "peer" : "ai";
-  return <SetupForm initialMode={mode} />;
+  return (
+    <SetupForm
+      key={`${mode}-${params?.track ?? ""}`}
+      initialMode={mode}
+      initialTrack={params?.track}
+    />
+  );
 }

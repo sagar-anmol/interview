@@ -353,6 +353,7 @@ export class InterviewEngine {
           canvasSummary,
           directive: snapshot.directive,
           userMessage,
+          track: snapshot.config.practiceMeta?.track,
         }),
       });
 
@@ -704,6 +705,7 @@ export class InterviewEngine {
           canvasSummary,
           decisionLog: st.decisionLog,
           elapsedSec: elapsedSeconds(st),
+          track: st.config.practiceMeta?.track,
         }),
       });
       if (!res.ok) {

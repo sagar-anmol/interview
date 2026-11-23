@@ -6,7 +6,7 @@ const VIEWPORTS = [
   { name: "laptop", width: 1024, height: 768 },
   { name: "mobile", width: 390, height: 844 },
 ];
-const ROUTES = ["/", "/practice"];
+const ROUTES = ["/", "/new?mode=ai"];
 
 const browser = await chromium.launch({
   channel: "chrome",
@@ -32,7 +32,7 @@ for (const vp of VIEWPORTS) {
     await page.goto(BASE + route, { waitUntil: "networkidle" });
     await page.waitForTimeout(900); // let entrance/choreography settle
 
-    const slug = route === "/" ? "home" : "practice";
+    const slug = route === "/" ? "home" : "setup";
     await page.screenshot({
       path: `/tmp/opencode/ui-${vp.name}-${slug}.png`,
       fullPage: true,
@@ -117,7 +117,7 @@ for (const vp of VIEWPORTS) {
           if (c && c.a > 0.85) return c;
           node = node.parentElement;
         }
-        return { r: 9, g: 9, b: 11, a: 1 };
+        return { r: 245, g: 247, b: 250, a: 1 };
       };
 
       const all = [...document.querySelectorAll("body *")];
@@ -134,7 +134,10 @@ for (const vp of VIEWPORTS) {
         if (r.width === 0 && r.height === 0) continue;
         const desc = `${el.tagName.toLowerCase()}${el.className && typeof el.className === "string" ? "." + el.className.split(/\s+/).slice(0, 3).join(".") : ""}`;
 
-        if (r.right > window.innerWidth + 1 || r.left < -1) {
+        if (
+          !el.closest('[aria-hidden="true"]') &&
+          (r.right > window.innerWidth + 1 || r.left < -1)
+        ) {
           overflowing.push({
             el: desc,
             left: Math.round(r.left),

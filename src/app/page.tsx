@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { HomeExperience } from "@/components/home/HomeExperience";
 
 export const metadata: Metadata = {
-  title: "CareerLoop · Interview Simulator",
+  title: "CareerLoop · Interview Practice",
   description:
-    "A voice-first system design interview simulator for senior engineering candidates.",
+    "Voice-first interview practice for system design, DSA, SQL, behavioral and more — with AI or a peer.",
 };
 
 export default function Home() {
