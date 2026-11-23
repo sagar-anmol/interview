@@ -64,7 +64,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex h-12 shrink-0 items-center justify-between border-b border-line px-5">
-        <span className="text-[14px] font-semibold tracking-tight text-zinc-100">Aced</span>
+        <span className="text-[14px] font-semibold tracking-tight text-zinc-100">CareerLoop</span>
         <span className="font-mono text-[9.5px] uppercase tracking-wider text-zinc-600">
           Recorded answer
         </span>

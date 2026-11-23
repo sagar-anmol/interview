@@ -12,6 +12,16 @@
   --accent-red: #ef4444;
   --accent-emerald: #34d399;
   --accent-amber: #fbbf24;
+
+  /* Material 3 motion tokens — transform/opacity only, GPU composited. */
+  --md-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-ease-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --md-duration-short: 150ms;
+  --md-duration-medium: 300ms;
+  --md-duration-long: 500ms;
+  --md-duration-emphasized: 700ms;
 }
 
 @theme inline {

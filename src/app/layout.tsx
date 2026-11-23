@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "./motion.css";
 import { Toaster } from "@/components/ui/toast";
 import { IntegrationStarter } from "@/components/IntegrationStarter";
 
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "System Design Interview",
+  title: "CareerLoop · Interview Simulator",
   description:
     "A voice-first system design interview simulator for senior engineering candidates.",
 };

@@ -1,0 +1,205 @@
+/* --------------------------------------------------------------------------
+   Material Motion — entrance choreography, ambient drift and state change.
+   Every animated property is transform or opacity so the browser can keep
+   the work on the compositor. No layout-affecting animation, no JS loop.
+   -------------------------------------------------------------------------- */
+
+@keyframes md-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes md-enter-left {
+  from {
+    opacity: 0;
+    transform: translate3d(-14px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes md-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(7%, 5%, 0) scale(1.1);
+  }
+}
+
+@keyframes md-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  to {
+    transform: translate3d(-6%, 7%, 0) scale(1);
+  }
+}
+
+@keyframes md-dash {
+  to {
+    stroke-dashoffset: -320;
+  }
+}
+
+@keyframes md-sheen {
+  from {
+    transform: translate3d(-120%, 0, 0);
+  }
+  to {
+    transform: translate3d(220%, 0, 0);
+  }
+}
+
+@keyframes md-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.72);
+  }
+}
+
+@keyframes md-underline {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.md-enter {
+  animation: md-enter var(--md-duration-long) var(--md-ease-decelerate) backwards;
+}
+
+.md-enter-left {
+  animation: md-enter-left var(--md-duration-long) var(--md-ease-decelerate) backwards;
+}
+
+.md-delay-1 {
+  animation-delay: 60ms;
+}
+.md-delay-2 {
+  animation-delay: 120ms;
+}
+.md-delay-3 {
+  animation-delay: 180ms;
+}
+.md-delay-4 {
+  animation-delay: 260ms;
+}
+.md-delay-5 {
+  animation-delay: 340ms;
+}
+
+.md-stagger > * {
+  animation: md-enter var(--md-duration-long) var(--md-ease-decelerate) backwards;
+}
+.md-stagger > *:nth-child(1) {
+  animation-delay: 60ms;
+}
+.md-stagger > *:nth-child(2) {
+  animation-delay: 120ms;
+}
+.md-stagger > *:nth-child(3) {
+  animation-delay: 180ms;
+}
+.md-stagger > *:nth-child(4) {
+  animation-delay: 240ms;
+}
+.md-stagger > *:nth-child(5) {
+  animation-delay: 300ms;
+}
+.md-stagger > *:nth-child(6) {
+  animation-delay: 360ms;
+}
+
+.md-lift {
+  transition:
+    transform var(--md-duration-medium) var(--md-ease-standard),
+    border-color var(--md-duration-medium) var(--md-ease-standard),
+    background-color var(--md-duration-medium) var(--md-ease-standard),
+    box-shadow var(--md-duration-medium) var(--md-ease-standard);
+}
+.md-lift:hover {
+  transform: translate3d(0, -3px, 0);
+  box-shadow: 0 12px 32px -18px rgba(0, 0, 0, 0.9);
+}
+
+.md-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.md-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 28%,
+    rgba(228, 228, 231, 0.055) 50%,
+    transparent 72%
+  );
+  transform: translate3d(-120%, 0, 0);
+}
+.md-sheen:hover::after {
+  animation: md-sheen var(--md-duration-emphasized) var(--md-ease-standard);
+}
+
+.md-dot {
+  animation: md-dot 2s var(--md-ease-standard) infinite;
+}
+
+.md-ambient-a {
+  animation: md-drift-a 19s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.md-ambient-b {
+  animation: md-drift-b 23s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.md-wire {
+  stroke-dasharray: 3 13;
+  animation: md-dash 9s linear infinite;
+}
+
+.md-underline {
+  transform-origin: left center;
+  animation: md-underline var(--md-duration-emphasized) var(--md-ease-emphasized)
+    300ms backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-enter,
+  .md-enter-left,
+  .md-stagger > *,
+  .md-ambient-a,
+  .md-ambient-b,
+  .md-wire,
+  .md-dot,
+  .md-underline,
+  .md-sheen:hover::after,
+  .animate-live,
+  .animate-fade-in,
+  .animate-waw {
+    animation: none !important;
+  }
+  .md-lift,
+  .md-sheen::after {
+    transition: none !important;
+  }
+}

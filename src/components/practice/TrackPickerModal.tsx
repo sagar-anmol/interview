@@ -62,7 +62,7 @@ export function TrackPickerModal({
         <Button variant="outline" size="sm">Upgrade</Button>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="md-stagger grid gap-2 sm:grid-cols-2">
         {TRACKS.map((track) => (
           <TrackCard
             key={track.id}

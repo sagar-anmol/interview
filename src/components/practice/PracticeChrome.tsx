@@ -64,14 +64,14 @@ export function PracticeSidebar() {
   return (
     <aside className="hidden w-[218px] shrink-0 flex-col border-r border-line bg-panel md:flex">
       <div className="flex items-center gap-2.5 px-4 py-4">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md border border-line-strong bg-zinc-900 text-[13px] font-semibold text-zinc-100">
-          A
+        <div className="flex h-7 w-7 items-center justify-center rounded-md border border-line-strong bg-zinc-900 font-mono text-[9px] font-semibold tracking-tight text-zinc-100">
+          CL
         </div>
         <div className="min-w-0 leading-tight">
           <p className="text-[14px] font-semibold tracking-tight text-zinc-100">
-            Aced
+            CareerLoop
           </p>
-          <p className="font-mono text-[9px] text-zinc-600">formerly Exponent</p>
+          <p className="font-mono text-[9px] text-zinc-600">Interview Simulator</p>
         </div>
         <button
           type="button"
@@ -146,18 +146,18 @@ export function PracticeHub({ onPractice }: { onPractice: () => void }) {
     <div className="min-h-0 flex-1 overflow-y-auto">
       <section className="relative overflow-hidden border-b border-line px-6 py-12 lg:px-12 lg:py-16">
         <div className="relative z-10 max-w-xl">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600">
+          <p className="md-enter font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600">
             Practice
           </p>
-          <h1 className="mt-3 text-[30px] font-medium leading-[1.15] tracking-tight text-zinc-100 lg:text-[40px]">
+          <h1 className="md-enter md-delay-1 mt-3 text-[30px] font-medium leading-[1.15] tracking-tight text-zinc-100 lg:text-[40px]">
             Practice mock interviews with peers and AI
           </h1>
-          <p className="mt-4 max-w-md text-[13px] leading-relaxed text-zinc-500">
+          <p className="md-enter md-delay-2 mt-4 max-w-md text-[13px] leading-relaxed text-zinc-500">
             Run a realistic, timed interview with an AI interviewer or a peer.
             Whiteboard for system design, IDE for coding, and voice-first
             conversational practice.
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-2.5">
+          <div className="md-enter md-delay-3 mt-6 flex flex-wrap items-center gap-2.5">
             <Button size="lg" onClick={onPractice}>
               Schedule a session
             </Button>
@@ -216,7 +216,7 @@ export function PracticeHub({ onPractice }: { onPractice: () => void }) {
           </div>
         </div>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="md-stagger mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {PEER_CARDS.map((card) => (
             <div
               key={card.label}

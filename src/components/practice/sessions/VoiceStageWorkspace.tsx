@@ -56,7 +56,7 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex h-12 shrink-0 items-center justify-between border-b border-line px-5">
-        <span className="text-[14px] font-semibold tracking-tight text-zinc-100">Aced</span>
+        <span className="text-[14px] font-semibold tracking-tight text-zinc-100">CareerLoop</span>
         <button
           type="button"
           className="rounded-full border border-line px-3 py-1.5 text-[11px] text-zinc-500 transition hover:border-line-strong hover:text-zinc-200"
