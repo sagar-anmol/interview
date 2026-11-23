@@ -56,6 +56,12 @@ body {
   background: rgba(228, 228, 231, 0.18);
 }
 
+/* Visible keyboard focus in a dark UI — never rely on the browser default. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid #a1a1aa;
+  outline-offset: 2px;
+}
+
 /* Thin dark scrollbars */
 * {
   scrollbar-width: thin;

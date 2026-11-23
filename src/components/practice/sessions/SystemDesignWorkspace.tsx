@@ -49,7 +49,7 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
                 onClick={() => setTab(key)}
                 className={cn(
                   "relative h-11 text-[11.5px] capitalize transition",
-                  tab === key ? "text-zinc-100" : "text-zinc-600 hover:text-zinc-300",
+                  tab === key ? "text-zinc-100" : "text-muted hover:text-zinc-300",
                 )}
               >
                 {key}
@@ -61,7 +61,7 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
             <button
               type="button"
               aria-label="Reset view"
-              className="ml-auto rounded p-1 text-zinc-600 hover:text-zinc-300"
+              className="ml-auto rounded p-1 text-muted hover:text-zinc-300"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
@@ -73,7 +73,7 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
             ) : null}
             {tab === "solution" ? (
               <div>
-                <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-zinc-600">
+                <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-muted">
                   Working notes
                 </p>
                 <h2 className="mt-2 text-[17px] font-medium text-zinc-100">
@@ -88,25 +88,25 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
             {tab === "transcript" ? (
               <div className="space-y-4">
                 {s.turns.length === 0 ? (
-                  <p className="text-[12px] text-zinc-600">
+                  <p className="text-[12px] text-muted">
                     The conversation will appear here.
                   </p>
                 ) : null}
                 {s.turns.map((turn) => (
                   <div key={turn.id}>
-                    <p className="font-mono text-[9px] uppercase tracking-wider text-zinc-600">
+                    <p className="font-mono text-[9px] uppercase tracking-wider text-muted">
                       {turn.speaker}
                     </p>
                     <p className="mt-1 text-[12px] leading-relaxed text-zinc-400">
                       {turn.spokenText || turn.text}
                       {turn.interrupted ? (
-                        <span className="ml-1 text-zinc-600">[interrupted]</span>
+                        <span className="ml-1 text-muted">[interrupted]</span>
                       ) : null}
                     </p>
                   </div>
                 ))}
                 {s.tentative ? (
-                  <p className="text-[12px] italic text-zinc-600">{s.tentative}</p>
+                  <p className="text-[12px] italic text-muted">{s.tentative}</p>
                 ) : null}
                 {latestQuestion ? null : null}
               </div>
@@ -139,7 +139,7 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
         onSubmit={() => void s.handleEnd()}
         center={
           !s.begun ? (
-            <span className="font-mono text-[10px] text-zinc-600">
+            <span className="font-mono text-[10px] text-muted">
               Waiting to begin
             </span>
           ) : null
@@ -158,7 +158,7 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
             <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-500">
               {scenario.prompt}
             </p>
-            <p className="mt-4 border-t border-line pt-3 font-mono text-[10px] text-zinc-600">
+            <p className="mt-4 border-t border-line pt-3 font-mono text-[10px] text-muted">
               20 MIN · {s.config.format === "voice" ? "VOICE" : "TEXT"} · STRICT
             </p>
             <Button size="lg" className="mt-4 w-full" onClick={s.begin}>
@@ -178,7 +178,7 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
 function QuestionPane({ title, prompt }: { title: string; prompt: string }) {
   return (
     <div>
-      <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-zinc-600">
+      <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-muted">
         20 minute architecture design
       </p>
       <h2 className="mt-2 text-[18px] font-medium leading-snug tracking-tight text-zinc-100">
@@ -209,7 +209,7 @@ function Guidance({ title, children }: { title: string; children: React.ReactNod
   return (
     <div>
       <p className="text-[12px] font-medium text-zinc-300">{title}</p>
-      <p className="mt-1 text-[11.5px] leading-relaxed text-zinc-600">{children}</p>
+      <p className="mt-1 text-[11.5px] leading-relaxed text-muted">{children}</p>
     </div>
   );
 }

@@ -104,11 +104,11 @@ export function PracticeSetupModal({
         </p>
         <ul className="mt-2 space-y-1.5">
           <li className="flex items-center gap-2 text-[11.5px] text-zinc-500">
-            <Check className="h-3 w-3 text-zinc-600" />
+            <Check className="h-3 w-3 text-muted" />
             Minimize background noise
           </li>
           <li className="flex items-center gap-2 text-[11.5px] text-zinc-500">
-            <Check className="h-3 w-3 text-zinc-600" />
+            <Check className="h-3 w-3 text-muted" />
             Maintain a stable internet connection
           </li>
         </ul>
@@ -132,7 +132,7 @@ export function PracticeSetupModal({
                     ? PM_FOCUS_AREAS.find((a) => a.id === focusArea)?.title
                     : "Pick a question for me"}
                 </span>
-                <span className="block truncate text-[10.5px] text-zinc-600">
+                <span className="block truncate text-[10.5px] text-muted">
                   {focusArea
                     ? PM_FOCUS_AREAS.find((a) => a.id === focusArea)?.description
                     : "Surprise me with a random PM question"}
@@ -161,7 +161,7 @@ export function PracticeSetupModal({
                   >
                     <span className="mt-0.5 min-w-0 flex-1">
                       <span className="block text-zinc-200">{area.title}</span>
-                      <span className="mt-0.5 block text-[10px] text-zinc-600">
+                      <span className="mt-0.5 block text-[10px] text-muted">
                         {area.description}
                       </span>
                     </span>
@@ -195,7 +195,7 @@ export function PracticeSetupModal({
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-2.5 top-2.5 h-4 w-4 text-zinc-600" />
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-2.5 h-4 w-4 text-muted" />
           </div>
         </div>
       ) : null}
@@ -251,7 +251,7 @@ function FormatCard({
     >
       <span className={cn("mb-1", active ? "text-zinc-200" : "text-zinc-500")}>{icon}</span>
       <span className="text-[12px] font-medium text-zinc-200">{title}</span>
-      <span className="text-[10px] leading-snug text-zinc-600">{description}</span>
+      <span className="text-[10px] leading-snug text-muted">{description}</span>
     </button>
   );
 }

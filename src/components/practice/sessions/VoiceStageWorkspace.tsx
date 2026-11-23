@@ -67,14 +67,14 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
 
       <main className="relative flex min-h-0 flex-1 flex-col items-center justify-center px-6 text-center">
         <div className="relative z-10 flex flex-col items-center">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
             The interviewer asks…
           </p>
           <h1 className="mt-5 max-w-2xl text-[28px] font-medium leading-tight tracking-tight text-zinc-100 md:text-[38px]">
             {question}
           </h1>
           {role ? (
-            <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-zinc-600">
+            <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-muted">
               Target role · {role}
             </p>
           ) : null}
@@ -99,7 +99,7 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
               size="hero"
             />
           </button>
-          <p className="mt-5 font-mono text-[10px] text-zinc-600">
+          <p className="mt-5 font-mono text-[10px] text-muted">
             {!s.begun
               ? "Click the mic to enable your microphone and begin"
               : s.speechState === "listening"
@@ -123,30 +123,30 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
                 type="button"
                 onClick={() => setTranscriptOpen(false)}
                 aria-label="Close transcript"
-                className="rounded p-1 text-zinc-600 hover:text-zinc-200"
+                className="rounded p-1 text-muted hover:text-zinc-200"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
             <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3">
               {s.turns.length === 0 ? (
-                <p className="text-[11px] text-zinc-600">The conversation will appear here.</p>
+                <p className="text-[11px] text-muted">The conversation will appear here.</p>
               ) : null}
               {s.turns.map((turn) => (
                 <div key={turn.id}>
-                  <p className="font-mono text-[9px] uppercase tracking-wider text-zinc-600">
+                  <p className="font-mono text-[9px] uppercase tracking-wider text-muted">
                     {turn.speaker}
                   </p>
                   <p className="mt-1 text-[11.5px] leading-relaxed text-zinc-400">
                     {turn.spokenText || turn.text}
                     {turn.interrupted ? (
-                      <span className="ml-1 text-zinc-600">[interrupted]</span>
+                      <span className="ml-1 text-muted">[interrupted]</span>
                     ) : null}
                   </p>
                 </div>
               ))}
               {s.tentative ? (
-                <p className="text-[11.5px] italic text-zinc-600">{s.tentative}</p>
+                <p className="text-[11.5px] italic text-muted">{s.tentative}</p>
               ) : null}
             </div>
           </aside>

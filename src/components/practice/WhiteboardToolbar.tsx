@@ -66,7 +66,7 @@ export function WhiteboardToolbar({ rf, zoom }: WhiteboardToolbarProps) {
             />
           ))}
         </div>
-        <p className="mt-1.5 hidden font-mono text-[9px] text-zinc-600 lg:block">
+        <p className="mt-1.5 hidden font-mono text-[9px] text-muted lg:block">
           To move canvas, hold mouse wheel or spacebar while dragging, or use the
           hand tool
         </p>
@@ -144,7 +144,7 @@ function ToolbarButton({
     >
       {icon}
       {shortcut ? (
-        <span className="absolute -bottom-0.5 right-0.5 font-mono text-[7px] text-zinc-600">
+        <span className="absolute -bottom-0.5 right-0.5 font-mono text-[7px] text-muted">
           {shortcut}
         </span>
       ) : null}

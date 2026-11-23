@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "postinstall": "node scripts/copy-vad-assets.mjs",
     "copy-vad-assets": "node scripts/copy-vad-assets.mjs",
-    "peer-server": "peerjs --port 9000 --path /peerjs --key peerjs"
+    "peer-server": "peerjs --port 9000 --path /peerjs --key peerjs",
+    "ui:audit": "node scripts/ui-audit.mjs"
   },
   "dependencies": {
     "@diffusionstudio/piper-wasm": "^1.0.0",

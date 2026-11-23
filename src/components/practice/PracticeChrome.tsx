@@ -44,15 +44,16 @@ export function AnnouncementBanner() {
   if (!visible) return null;
   return (
     <div className="flex h-9 shrink-0 items-center justify-center gap-3 border-b border-line bg-panel px-4 text-center">
-      <p className="truncate text-[11.5px] text-zinc-400">
-        <span className="text-zinc-200">Just launched:</span> Our 2027 system
-        design interview course, featuring AI systems and 40+ videos.
+      <p className="text-[11.5px] text-zinc-400 sm:truncate">
+        <span className="hidden text-zinc-200 sm:inline">Just launched:</span>
+        <span className="sm:hidden">New:</span> Our 2027 system design course —
+        AI systems, 40+ videos.
       </p>
       <button
         type="button"
         aria-label="Dismiss announcement"
         onClick={() => setVisible(false)}
-        className="rounded p-0.5 text-zinc-600 hover:text-zinc-300"
+        className="-mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted transition hover:bg-zinc-900 hover:text-zinc-200"
       >
         <X className="h-3.5 w-3.5" />
       </button>
@@ -71,12 +72,12 @@ export function PracticeSidebar() {
           <p className="text-[14px] font-semibold tracking-tight text-zinc-100">
             CareerLoop
           </p>
-          <p className="font-mono text-[9px] text-zinc-600">Interview Simulator</p>
+          <p className="font-mono text-[9px] text-muted">Interview Simulator</p>
         </div>
         <button
           type="button"
           aria-label="Collapse sidebar"
-          className="ml-auto rounded p-1 text-zinc-600 hover:text-zinc-300"
+          className="ml-auto rounded p-1 text-muted hover:text-zinc-300"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -84,9 +85,9 @@ export function PracticeSidebar() {
 
       <div className="px-3 pb-3">
         <div className="flex h-8 items-center gap-2 rounded-md border border-line bg-panel-2 px-2.5">
-          <Search className="h-3.5 w-3.5 text-zinc-600" />
-          <span className="flex-1 text-[11.5px] text-zinc-600">Search</span>
-          <kbd className="rounded border border-line px-1 font-mono text-[9px] text-zinc-600">
+          <Search className="h-3.5 w-3.5 text-muted" />
+          <span className="flex-1 text-[11.5px] text-muted">Search</span>
+          <kbd className="rounded border border-line px-1 font-mono text-[9px] text-muted">
             ⌘K
           </kbd>
         </div>
@@ -103,12 +104,12 @@ export function PracticeSidebar() {
                 "flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[12px] transition",
                 item.active
                   ? "border border-line-strong bg-zinc-900 text-zinc-100"
-                  : "border border-transparent text-zinc-500 hover:bg-zinc-900/60 hover:text-zinc-300",
+                  : "border border-transparent text-muted hover:bg-zinc-900/60 hover:text-zinc-300",
               )}
             >
-              <Icon className={cn("h-4 w-4", item.active ? "text-zinc-300" : "text-zinc-600")} />
+              <Icon className={cn("h-4 w-4", item.active ? "text-zinc-300" : "text-muted")} />
               <span className="flex-1">{item.label}</span>
-              {item.chevron ? <ChevronRight className="h-3 w-3 text-zinc-700" /> : null}
+              {item.chevron ? <ChevronRight className="h-3 w-3 text-zinc-500" /> : null}
             </button>
           );
         })}
@@ -125,9 +126,9 @@ export function PracticeSidebar() {
           </div>
           <div className="min-w-0 flex-1 leading-tight">
             <p className="truncate text-[11.5px] text-zinc-300">Sagar K.</p>
-            <p className="font-mono text-[9px] text-zinc-600">Basic · 0 pts</p>
+            <p className="font-mono text-[9px] text-muted">Basic · 0 pts</p>
           </div>
-          <ChevronDown className="h-3.5 w-3.5 text-zinc-600" />
+          <ChevronDown className="h-3.5 w-3.5 text-muted" />
         </div>
       </div>
     </aside>
@@ -146,13 +147,13 @@ export function PracticeHub({ onPractice }: { onPractice: () => void }) {
     <div className="min-h-0 flex-1 overflow-y-auto">
       <section className="relative overflow-hidden border-b border-line px-6 py-12 lg:px-12 lg:py-16">
         <div className="relative z-10 max-w-xl">
-          <p className="md-enter font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600">
+          <p className="md-enter font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
             Practice
           </p>
           <h1 className="md-enter md-delay-1 mt-3 text-[30px] font-medium leading-[1.15] tracking-tight text-zinc-100 lg:text-[40px]">
             Practice mock interviews with peers and AI
           </h1>
-          <p className="md-enter md-delay-2 mt-4 max-w-md text-[13px] leading-relaxed text-zinc-500">
+          <p className="md-enter md-delay-2 mt-4 max-w-md text-[13px] leading-relaxed text-muted">
             Run a realistic, timed interview with an AI interviewer or a peer.
             Whiteboard for system design, IDE for coding, and voice-first
             conversational practice.
@@ -222,11 +223,11 @@ export function PracticeHub({ onPractice }: { onPractice: () => void }) {
               key={card.label}
               className="rounded-lg border border-line bg-panel-2 p-4 transition hover:border-line-strong"
             >
-              <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-zinc-600">
+              <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted">
                 Next session
               </p>
               <p className="mt-2 text-[13px] font-medium text-zinc-200">{card.label}</p>
-              <p className="mt-1 text-[11px] text-zinc-600">{card.when} · +XX more times this week</p>
+              <p className="mt-1 text-[11px] text-muted">{card.when} · +XX more times this week</p>
               <div className="mt-4 flex items-center justify-between">
                 <div className="flex -space-x-1.5">
                   {[0, 1, 2].map((i) => (
@@ -237,11 +238,11 @@ export function PracticeHub({ onPractice }: { onPractice: () => void }) {
                       {String.fromCharCode(65 + i)}
                     </span>
                   ))}
-                  <span className="flex h-6 items-center justify-center rounded-full border border-panel-2 bg-zinc-900 px-1 text-[9px] text-zinc-500">
+                  <span className="flex h-6 items-center justify-center rounded-full border border-panel-2 bg-zinc-900 px-1 text-[9px] text-muted">
                     +{card.joined}
                   </span>
                 </div>
-                <span className="font-mono text-[9px] text-zinc-600">{card.joined} joined</span>
+                <span className="font-mono text-[9px] text-muted">{card.joined} joined</span>
               </div>
               <Link
                 href="/new?mode=peer"

@@ -17,7 +17,7 @@ export default function PracticePage() {
   const router = useRouter();
   const init = useInterviewStore((s) => s.init);
 
-  const [pickerOpen, setPickerOpen] = React.useState(true);
+  const [pickerOpen, setPickerOpen] = React.useState(false);
   const [setupOpen, setSetupOpen] = React.useState(false);
   const [track, setTrack] = React.useState<PracticeTrack>("system-design");
   const [starting, setStarting] = React.useState(false);

@@ -25,6 +25,8 @@ export function PracticeModal({
   footer,
   width = "md",
 }: PracticeModalProps) {
+  const panelRef = React.useRef<HTMLDivElement>(null);
+
   React.useEffect(() => {
     const dismiss = onEscape ?? onClose;
     if (!open || !dismiss) return;
@@ -35,16 +37,28 @@ export function PracticeModal({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose, onEscape]);
 
+  React.useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const frame = requestAnimationFrame(() => panelRef.current?.focus());
+    return () => {
+      cancelAnimationFrame(frame);
+      previous?.focus?.();
+    };
+  }, [open]);
+
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+    <div className="md-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label={title}
+        tabIndex={-1}
         className={cn(
-          "relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-xl border border-line-strong bg-panel-2 shadow-2xl shadow-black/70 animate-fade-in",
+          "md-modal-panel relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-xl border border-line-strong bg-panel-2 shadow-2xl shadow-black/70 outline-none",
           width === "lg" ? "max-w-2xl" : "max-w-lg",
         )}
       >
@@ -64,7 +78,7 @@ export function PracticeModal({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="rounded p-1 text-zinc-500 transition hover:bg-zinc-900 hover:text-zinc-200"
+              className="-mr-1 flex h-7 w-7 items-center justify-center rounded-md text-muted transition hover:bg-zinc-900 hover:text-zinc-200"
             >
               <X className="h-4 w-4" />
             </button>

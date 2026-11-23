@@ -95,7 +95,7 @@ export function CodingWorkspace({ id }: { id: string }) {
                 onClick={() => setTab(key)}
                 className={cn(
                   "relative h-11 text-[11px] capitalize transition",
-                  tab === key ? "text-zinc-100" : "text-zinc-600 hover:text-zinc-300",
+                  tab === key ? "text-zinc-100" : "text-muted hover:text-zinc-300",
                 )}
               >
                 {key}
@@ -107,7 +107,7 @@ export function CodingWorkspace({ id }: { id: string }) {
             <button
               type="button"
               aria-label="Reset question"
-              className="ml-auto rounded p-1 text-zinc-600 hover:text-zinc-300"
+              className="ml-auto rounded p-1 text-muted hover:text-zinc-300"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
@@ -129,7 +129,7 @@ export function CodingWorkspace({ id }: { id: string }) {
                   reached again by continuously following the <Code>next</Code> pointer.
                 </p>
 
-                <p className="mt-7 font-mono text-[9.5px] uppercase tracking-[0.18em] text-zinc-600">
+                <p className="mt-7 font-mono text-[9.5px] uppercase tracking-[0.18em] text-muted">
                   Example
                 </p>
                 <div className="mt-3 space-y-3">
@@ -141,13 +141,13 @@ export function CodingWorkspace({ id }: { id: string }) {
 
             {tab === "hints" ? (
               <div>
-                <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-zinc-600">
+                <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-muted">
                   Progressive hints
                 </p>
                 <ol className="mt-3 space-y-3">
                   {HINTS.map((hint, index) => (
                     <li key={hint} className="flex gap-2.5 text-[12px] leading-relaxed text-zinc-400">
-                      <span className="font-mono text-[10px] text-zinc-600">
+                      <span className="font-mono text-[10px] text-muted">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       <span>{hint}</span>
@@ -159,7 +159,7 @@ export function CodingWorkspace({ id }: { id: string }) {
 
             {tab === "solution" ? (
               <div>
-                <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-zinc-600">
+                <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-muted">
                   Interviewer notes
                 </p>
                 <p className="mt-3 whitespace-pre-wrap text-[12px] leading-relaxed text-zinc-400">
@@ -172,11 +172,11 @@ export function CodingWorkspace({ id }: { id: string }) {
             {tab === "transcript" ? (
               <div className="space-y-4">
                 {s.turns.length === 0 ? (
-                  <p className="text-[12px] text-zinc-600">The conversation will appear here.</p>
+                  <p className="text-[12px] text-muted">The conversation will appear here.</p>
                 ) : null}
                 {s.turns.map((turn) => (
                   <div key={turn.id}>
-                    <p className="font-mono text-[9px] uppercase tracking-wider text-zinc-600">
+                    <p className="font-mono text-[9px] uppercase tracking-wider text-muted">
                       {turn.speaker}
                     </p>
                     <p className="mt-1 text-[12px] leading-relaxed text-zinc-400">
@@ -185,7 +185,7 @@ export function CodingWorkspace({ id }: { id: string }) {
                   </div>
                 ))}
                 {s.tentative ? (
-                  <p className="text-[12px] italic text-zinc-600">{s.tentative}</p>
+                  <p className="text-[12px] italic text-muted">{s.tentative}</p>
                 ) : null}
               </div>
             ) : null}
@@ -198,12 +198,12 @@ export function CodingWorkspace({ id }: { id: string }) {
               type="button"
               className="flex items-center gap-1.5 rounded border border-line px-2 py-1 text-[11px] text-zinc-400 hover:border-line-strong"
             >
-              Python <ChevronDown className="h-3 w-3 text-zinc-600" />
+              Python <ChevronDown className="h-3 w-3 text-muted" />
             </button>
             <button
               type="button"
               onClick={() => setCode(STARTER_CODE)}
-              className="text-[11px] text-zinc-600 transition hover:text-zinc-300"
+              className="text-[11px] text-muted transition hover:text-zinc-300"
             >
               Reset
             </button>
@@ -212,7 +212,7 @@ export function CodingWorkspace({ id }: { id: string }) {
           <div className="flex min-h-0 flex-1 overflow-auto font-mono text-[12px] leading-[1.65]">
             <div className="sticky left-0 z-10 w-11 shrink-0 select-none border-r border-line/60 bg-[#0a0a0d] py-3 text-right">
               {code.split("\n").map((_, i) => (
-                <div key={i} className="pr-2.5 text-zinc-700">
+                <div key={i} className="pr-2.5 text-zinc-500">
                   {i + 1}
                 </div>
               ))}
@@ -236,7 +236,7 @@ export function CodingWorkspace({ id }: { id: string }) {
                     onClick={() => setConsoleTab(key)}
                     className={cn(
                       "relative h-9 text-[11px] capitalize transition",
-                      consoleTab === key ? "text-zinc-100" : "text-zinc-600 hover:text-zinc-300",
+                      consoleTab === key ? "text-zinc-100" : "text-muted hover:text-zinc-300",
                     )}
                   >
                     {key === "output" ? "Output" : "Test Results"}
@@ -248,7 +248,7 @@ export function CodingWorkspace({ id }: { id: string }) {
                 <button
                   type="button"
                   onClick={() => setConsoleOpen(false)}
-                  className="ml-auto text-[10.5px] text-zinc-600 hover:text-zinc-300"
+                  className="ml-auto text-[10.5px] text-muted hover:text-zinc-300"
                 >
                   Hide console
                 </button>
@@ -267,7 +267,7 @@ export function CodingWorkspace({ id }: { id: string }) {
                           key={test}
                           className="flex items-center gap-2 rounded px-2 py-1 text-zinc-500 hover:bg-zinc-900/60"
                         >
-                          <span className="text-zinc-700">›</span>
+                          <span className="text-zinc-500">›</span>
                           <span className="text-amber-500/80">●</span>
                           <span>
                             Test case {index + 1}: {test}
@@ -283,7 +283,7 @@ export function CodingWorkspace({ id }: { id: string }) {
             <button
               type="button"
               onClick={() => setConsoleOpen(true)}
-              className="flex h-8 shrink-0 items-center justify-center gap-1.5 border-t border-line bg-panel text-[10.5px] text-zinc-600 hover:text-zinc-300"
+              className="flex h-8 shrink-0 items-center justify-center gap-1.5 border-t border-line bg-panel text-[10.5px] text-muted hover:text-zinc-300"
             >
               <Terminal className="h-3 w-3" /> Show console
             </button>
@@ -355,7 +355,7 @@ function CycleDiagram({ label, cyclic }: { label: string; cyclic?: boolean }) {
   const values = ["1", "2", "3", "4", "5"];
   return (
     <div className="rounded-lg border border-line bg-panel-2 p-3">
-      <p className="font-mono text-[9px] uppercase tracking-wider text-zinc-600">{label}</p>
+      <p className="font-mono text-[9px] uppercase tracking-wider text-muted">{label}</p>
       <div className="mt-3 flex items-center justify-center gap-1.5">
         {values.map((value, index) => (
           <React.Fragment key={value}>
@@ -363,7 +363,7 @@ function CycleDiagram({ label, cyclic }: { label: string; cyclic?: boolean }) {
               {value}
             </span>
             {index < values.length - 1 ? (
-              <span className="text-[10px] text-zinc-700">→</span>
+              <span className="text-[10px] text-zinc-500">→</span>
             ) : null}
           </React.Fragment>
         ))}
@@ -384,8 +384,8 @@ function CycleDiagram({ label, cyclic }: { label: string; cyclic?: boolean }) {
           </defs>
         </svg>
       ) : (
-        <div className="mt-1 flex items-center gap-1 pl-[70px] font-mono text-[11px] text-zinc-700">
-          → <span className="text-zinc-600">None</span>
+        <div className="mt-1 flex items-center gap-1 pl-[70px] font-mono text-[11px] text-zinc-500">
+          → <span className="text-muted">None</span>
         </div>
       )}
     </div>

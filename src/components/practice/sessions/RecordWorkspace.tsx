@@ -65,7 +65,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex h-12 shrink-0 items-center justify-between border-b border-line px-5">
         <span className="text-[14px] font-semibold tracking-tight text-zinc-100">CareerLoop</span>
-        <span className="font-mono text-[9.5px] uppercase tracking-wider text-zinc-600">
+        <span className="font-mono text-[9.5px] uppercase tracking-wider text-muted">
           Recorded answer
         </span>
       </header>
@@ -73,21 +73,21 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
       <div className="flex min-h-0 flex-1">
         <main className="flex min-w-0 flex-1 flex-col overflow-y-auto px-6 py-8 lg:px-12">
           <div className="max-w-2xl">
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
               Your question
             </p>
             <h1 className="mt-4 text-[24px] font-medium leading-snug tracking-tight text-zinc-100 md:text-[30px]">
               {question}
             </h1>
             {role ? (
-              <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-zinc-600">
+              <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted">
                 Target role · {role}
               </p>
             ) : null}
 
             <div className="mt-8 rounded-xl border border-line-strong bg-panel-2 p-5">
               <p className="text-[12px] font-medium text-zinc-300">Record your answer</p>
-              <p className="mt-1 text-[11px] leading-relaxed text-zinc-600">
+              <p className="mt-1 text-[11px] leading-relaxed text-muted">
                 Speak into your microphone or type your response below. You can submit more
                 than one answer before ending the interview.
               </p>
@@ -114,7 +114,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
                   <p className="text-[12px] text-zinc-300">
                     {recording ? "Recording…" : "Ready to record"}
                   </p>
-                  <p className="mt-0.5 font-mono text-[10px] text-zinc-600">
+                  <p className="mt-0.5 font-mono text-[10px] text-muted">
                     {recording ? "Click square to stop" : "Click the mic to start"}
                   </p>
                 </div>
@@ -161,11 +161,11 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
           </div>
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
             {s.turns.length === 0 ? (
-              <p className="text-[11px] text-zinc-600">The conversation will appear here.</p>
+              <p className="text-[11px] text-muted">The conversation will appear here.</p>
             ) : null}
             {s.turns.map((turn) => (
               <div key={turn.id}>
-                <p className="font-mono text-[9px] uppercase tracking-wider text-zinc-600">
+                <p className="font-mono text-[9px] uppercase tracking-wider text-muted">
                   {turn.speaker}
                 </p>
                 <p className="mt-1 text-[11.5px] leading-relaxed text-zinc-400">
@@ -174,7 +174,7 @@ export function RecordWorkspace({ id, track, role }: RecordWorkspaceProps) {
               </div>
             ))}
             {s.tentative ? (
-              <p className="text-[11.5px] italic text-zinc-600">{s.tentative}</p>
+              <p className="text-[11.5px] italic text-muted">{s.tentative}</p>
             ) : null}
           </div>
         </aside>

@@ -203,3 +203,35 @@
     transition: none !important;
   }
 }
+
+/* Modal / dialog transitions — compositor-only, reduced-motion safe. */
+@keyframes md-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes md-dialog-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.md-modal-backdrop {
+  animation: md-backdrop-in var(--md-duration-medium) var(--md-ease-standard);
+}
+
+.md-modal-panel {
+  animation: md-dialog-in var(--md-duration-long) var(--md-ease-emphasized);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-modal-backdrop,
+  .md-modal-panel {
+    animation: none !important;
+  }
+}
