@@ -4,6 +4,7 @@ import type { MicVAD } from "@ricky0123/vad-web";
 import { AudioQueue } from "@/lib/audio/audioQueue";
 import { SentenceChunker } from "@/lib/audio/sentenceChunker";
 import { encodeWav } from "@/lib/audio/wavEncoder";
+import { isPiperReady, synthesizeSpeech } from "@/lib/tts/piperTts";
 import { graphFromReactFlow, serializeCanvasForLLM } from "@/lib/canvas/serializeCanvas";
 import {
   buildInterviewStateBlock,
@@ -43,6 +44,8 @@ export class InterviewEngine {
   private turnAbort: AbortController | null = null;
   private ttsAborts = new Set<AbortController>();
   private ttsChain: Promise<void> = Promise.resolve();
+  /** Bumped on every barge-in so in-flight synthesis is discarded. */
+  private ttsGeneration = 0;
   private assistantTurnId: string | null = null;
   private sentenceSeq = 0;
   private speechEndedAt = 0;
@@ -437,11 +440,33 @@ export class InterviewEngine {
 
   private enqueueSentence(text: string) {
     const id = `${this.assistantTurnId ?? "turn"}-${this.sentenceSeq++}`;
-    this.ttsChain = this.ttsChain.then(() => this.fetchAndQueue(id, text));
+    const generation = this.ttsGeneration;
+    // Synthesis starts immediately so consecutive sentences overlap; the
+    // enqueue itself stays ordered through ttsChain for gapless playback.
+    const synth = this.synthAudio(id, text);
+    this.ttsChain = this.ttsChain.then(async () => {
+      if (this.destroyed || generation !== this.ttsGeneration) return;
+      const data = await synth;
+      if (this.destroyed || generation !== this.ttsGeneration) return;
+      if (data) {
+        this.queuedAnyAudio = true;
+        await this.queue.enqueueAudio(id, text, data);
+      } else {
+        this.queue.enqueueSpeech(id, text);
+      }
+    });
   }
 
-  private async fetchAndQueue(id: string, text: string) {
-    if (this.destroyed) return;
+  /** Piper in the browser first, the server proxy second, Web Speech last. */
+  private async synthAudio(id: string, text: string): Promise<ArrayBuffer | null> {
+    if (this.destroyed) return null;
+    if (isPiperReady()) {
+      const wav = await synthesizeSpeech(text);
+      if (wav && wav.byteLength >= 1000) return wav;
+      console.warn("[engine] piper returned nothing, falling back", id);
+    }
+
+    if (this.destroyed) return null;
     const abort = new AbortController();
     this.ttsAborts.add(abort);
     try {
@@ -451,26 +476,14 @@ export class InterviewEngine {
         body: JSON.stringify({ text }),
         signal: abort.signal,
       });
-
-      if (res.status === 503) {
-        this.queue.enqueueSpeech(id, text);
-        return;
-      }
-      if (!res.ok) {
-        this.queue.enqueueSpeech(id, text);
-        return;
-      }
+      if (!res.ok) return null;
       const data = await res.arrayBuffer();
-      if (data.byteLength < 1000) {
-        this.queue.enqueueSpeech(id, text);
-        return;
-      }
-      this.queuedAnyAudio = true;
-      await this.queue.enqueueAudio(id, text, data);
+      if (data.byteLength < 1000) return null;
+      return data;
     } catch (error) {
-      if (abort.signal.aborted) return;
-      console.warn("[engine] tts failed, using web speech", error);
-      this.queue.enqueueSpeech(id, text);
+      if (abort.signal.aborted) return null;
+      console.warn("[engine] server tts failed, using web speech", error);
+      return null;
     } finally {
       this.ttsAborts.delete(abort);
     }
@@ -486,6 +499,9 @@ export class InterviewEngine {
     this.turnAbort = null;
     for (const abort of this.ttsAborts) abort.abort();
     this.ttsAborts.clear();
+    // Piper synthesis cannot be cancelled, so any result arriving after this
+    // point belongs to a turn the candidate already cut off.
+    this.ttsGeneration++;
     this.ttsChain = Promise.resolve();
 
     if (this.assistantTurnId) {

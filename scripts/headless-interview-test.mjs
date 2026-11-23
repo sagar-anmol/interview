@@ -103,7 +103,7 @@ const transcriptText = await page
   });
 log(`[check] textbox count: ${await page.getByRole("textbox").count()}`);
 
-// 5. Type an answer and submit (tests text path; LLM will 503 since no key)
+// 5. Type an answer and submit (tests the text path through the real LLM)
 const textInput = page.getByPlaceholder(/Speak your answer or type here/);
 await textInput.fill("hello");
 await textInput.press("Enter");
@@ -127,7 +127,21 @@ const turnRes = await page.request.post("http://localhost:3000/api/interview/tur
     userMessage: "test",
   },
 });
-log(`[api] POST /api/interview/turn -> ${turnRes.status()} ${(await turnRes.json()).code ?? ""}`.trim());
+const turnBody = await turnRes.text();
+const turnEvents = turnBody
+  .split("\n")
+  .filter((line) => line.startsWith("data: "))
+  .map((line) => {
+    try {
+      return JSON.parse(line.slice(6));
+    } catch {
+      return null;
+    }
+  })
+  .filter(Boolean);
+log(
+  `[api] POST /api/interview/turn -> ${turnRes.status()} events=${turnEvents.length} types=${[...new Set(turnEvents.map((e) => e.type))].join(",")}`,
+);
 
 const evalRes = await page.request.post("http://localhost:3000/api/interview/evaluate", {
   data: {

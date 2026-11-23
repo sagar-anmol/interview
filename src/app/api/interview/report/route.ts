@@ -3,8 +3,8 @@ import {
   reportSystemPrompt,
 } from "@/lib/interview/prompts";
 import {
-  FOREGROUND_MODEL,
   errorResponse,
+  generateWithFallback,
   getGenAI,
   parseJsonResponse,
 } from "@/lib/server/genai";
@@ -65,19 +65,20 @@ export async function POST(req: Request) {
 
   try {
     const ai = getGenAI();
-    const response = await ai.models.generateContent({
-      model: FOREGROUND_MODEL,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
+    const response = await generateWithFallback((model) =>
+      ai.models.generateContent({
+        model,
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        config: {
         systemInstruction: reportSystemPrompt(scenario),
         temperature: 0.4,
         maxOutputTokens: 2600,
         responseMimeType: "application/json",
-        responseSchema: REPORT_SCHEMA,
-        thinkingConfig: { thinkingBudget: 0 },
-        abortSignal: req.signal,
-      },
-    });
+          responseSchema: REPORT_SCHEMA,
+          abortSignal: req.signal,
+        },
+      }),
+    );
 
     const parsed = parseJsonResponse<Omit<Report, "generatedAt">>(response.text);
 

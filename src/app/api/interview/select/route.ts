@@ -5,7 +5,7 @@ import {
 import { SCENARIO_POOL } from "@/lib/interview/scenarios";
 import {
   ApiError,
-  FOREGROUND_MODEL,
+  generateWithFallback,
   getGenAI,
   parseJsonResponse,
 } from "@/lib/server/genai";
@@ -57,9 +57,10 @@ export async function POST(req: Request) {
 
   try {
     const ai = getGenAI();
-    const response = await ai.models.generateContent({
-      model: FOREGROUND_MODEL,
-      contents: [
+    const response = await generateWithFallback((model) =>
+      ai.models.generateContent({
+        model,
+        contents: [
         {
           role: "user",
           parts: [
@@ -76,16 +77,16 @@ export async function POST(req: Request) {
           ],
         },
       ],
-      config: {
-        systemInstruction: selectQuestionPrompt(),
-        temperature: 0.9,
-        maxOutputTokens: 700,
-        responseMimeType: "application/json",
-        responseSchema: SELECT_SCHEMA,
-        thinkingConfig: { thinkingBudget: 0 },
-        abortSignal: req.signal,
-      },
-    });
+        config: {
+          systemInstruction: selectQuestionPrompt(),
+          temperature: 0.9,
+          maxOutputTokens: 700,
+          responseMimeType: "application/json",
+          responseSchema: SELECT_SCHEMA,
+          abortSignal: req.signal,
+        },
+      }),
+    );
 
     const parsed = parseJsonResponse<SelectResult>(response.text);
     const allowed = new Set(SCENARIO_POOL.map((s) => s.id));

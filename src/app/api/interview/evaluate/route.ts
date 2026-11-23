@@ -9,8 +9,8 @@ import {
   type MilestoneStatus,
 } from "@/lib/interview/scenarios";
 import {
-  FOREGROUND_MODEL,
   errorResponse,
+  generateWithFallback,
   getGenAI,
   parseJsonResponse,
 } from "@/lib/server/genai";
@@ -76,19 +76,20 @@ export async function POST(req: Request) {
 
   try {
     const ai = getGenAI();
-    const response = await ai.models.generateContent({
-      model: FOREGROUND_MODEL,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
-        systemInstruction: evaluatorSystemPrompt(scenario),
-        temperature: 0.2,
-        maxOutputTokens: 900,
-        responseMimeType: "application/json",
-        responseSchema: EVALUATE_SCHEMA,
-        thinkingConfig: { thinkingBudget: 0 },
-        abortSignal: req.signal,
-      },
-    });
+    const response = await generateWithFallback((model) =>
+      ai.models.generateContent({
+        model,
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        config: {
+          systemInstruction: evaluatorSystemPrompt(scenario),
+          temperature: 0.2,
+          maxOutputTokens: 900,
+          responseMimeType: "application/json",
+          responseSchema: EVALUATE_SCHEMA,
+          abortSignal: req.signal,
+        },
+      }),
+    );
 
     const parsed = parseJsonResponse<EvaluateResult>(response.text);
 

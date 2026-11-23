@@ -6,21 +6,21 @@ import {
   onIntegrationChange,
   type IntegrationState,
 } from "@/lib/integration/integrationManager";
+import { isPiperReady } from "@/lib/tts/piperTts";
+import { DEFAULT_VOICE_ID } from "@/lib/tts/voices";
 import { cn } from "@/lib/utils";
 
-const STEPS: { id: string; label: string; holdMs: number }[] = [
-  { id: "load", label: "Loading integration runtime", holdMs: 900 },
-  { id: "check", label: "Verifying ORT WebAssembly support", holdMs: 900 },
-  { id: "ready", label: "Integration ready", holdMs: 700 },
-];
+const MB = 1_048_576;
 
-const ASSETS_TOTAL = 11;
-
+/**
+ * Pre-flight screen shown before an interview starts. Everything it displays
+ * is real: the bytes below came off the network, and the Piper weights stay
+ * in the browser (OPFS) after the first visit.
+ */
 export function IntegrationCheckScreen({ onDone }: { onDone: () => void }) {
   const [state, setState] = React.useState<IntegrationState>(getIntegrationState);
-  const [elapsedMs, setElapsedMs] = React.useState(0);
-  const [autoProgress, setAutoProgress] = React.useState(0);
-  const [closed, setClosed] = React.useState(false);
+  const [seconds, setSeconds] = React.useState(0);
+  const [closing, setClosing] = React.useState(false);
 
   React.useEffect(() => {
     const unsub = onIntegrationChange(() => setState(getIntegrationState()));
@@ -28,126 +28,158 @@ export function IntegrationCheckScreen({ onDone }: { onDone: () => void }) {
   }, []);
 
   React.useEffect(() => {
-    const timer = setInterval(() => {
-      setState(getIntegrationState());
-      setElapsedMs((e) => e + 120);
-      setAutoProgress((p) => Math.min(1, p + 0.004));
-    }, 120);
+    if (state.done) return;
+    const timer = setInterval(() => setSeconds((s) => s + 1), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [state.done]);
 
-  const stepIndex = autoProgress >= 1.0 || state.done ? STEPS.length - 1 : Math.min(2, Math.floor(autoProgress * 3));
-  const currentStep = STEPS[stepIndex];
-  const stepDoneCount = stepIndex + 1;
+  const finish = React.useCallback(() => {
+    setClosing(true);
+    onDone();
+  }, [onDone]);
 
+  // Auto-dismiss once both stages are warm. Cached visits finish almost
+  // instantly; the first visit keeps the screen up for a moment so the
+  // numbers are readable rather than flashing past.
   React.useEffect(() => {
-    if (state.done && autoProgress >= 0.6) {
-      const t = setTimeout(() => {
-        setClosed(true);
-        onDone();
-      }, 400);
-      return () => clearTimeout(t);
-    }
-  }, [state.done, autoProgress, onDone]);
+    if (!state.done || closing) return;
+    const t = setTimeout(finish, state.vadTotal + state.voiceTotal > 0 ? 350 : 700);
+    return () => clearTimeout(t);
+  }, [state.done, closing, finish, state.vadTotal, state.voiceTotal]);
 
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setClosed(true);
-        onDone();
-      }
+      if (e.key === "Escape" || e.key === "Enter") finish();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onDone]);
+  }, [finish]);
 
-  if (closed) return null;
+  if (closing) return null;
 
-  const percent = state.done
-    ? 100
-    : Math.max(
-        Math.min(
-          state.total > 0 ? Math.round((state.loaded / state.total) * 100) : autoProgress * 100,
-          100,
-        ),
-        1,
-      );
-  const statusColor = state.done ? "text-emerald-400" : "text-amber-400";
-  const barColor = state.done
-    ? "bg-emerald-400"
-    : state.loaded > 0
-      ? "bg-amber-400"
-      : "bg-zinc-600 animate-pulse";
+  const phaseTotal = state.phase === "ready" ? state.voiceTotal : state.total;
+  const phaseLoaded = state.phase === "ready" ? state.voiceLoaded : state.loaded;
+  const percent = phaseTotal > 0 ? Math.min(100, Math.round((phaseLoaded / phaseTotal) * 100)) : 0;
+
+  const stages = [
+    {
+      id: "vad",
+      label: "Silero VAD + ONNX runtime",
+      detail: `${(state.vadLoaded / MB).toFixed(1)} / ${(state.vadTotal / MB).toFixed(1)} MB`,
+      complete: state.vadLoaded >= state.vadTotal && state.phase !== "vad",
+      size: state.vadTotal,
+    },
+    {
+      id: "voice",
+      label: `Piper voice · ${DEFAULT_VOICE_ID}`,
+      detail:
+        state.voiceLoaded > 0
+          ? `${(state.voiceLoaded / MB).toFixed(1)} / ${(state.voiceTotal / MB).toFixed(1)} MB`
+          : state.phase === "voice"
+            ? "starting…"
+            : "pending",
+      complete: state.done,
+      size: state.voiceTotal,
+    },
+    {
+      id: "session",
+      label: "Inference session warm",
+      detail: state.phase === "ready" ? "cached in this browser" : state.phase === "voice" ? "held until download finishes" : "Queued",
+      complete: state.done,
+    },
+  ];
+
+  const piperReady = isPiperReady();
+  const cached = state.done && piperReady;
 
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/85 backdrop-blur-[2px]">
       <div className="flex max-w-lg flex-col gap-5 p-7">
         <div className="flex items-center gap-2.5">
-          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-live" />
+          <span
+            className={cn(
+              "h-2 w-2 rounded-full",
+              state.done ? "bg-emerald-500 animate-live" : "bg-amber-400 animate-pulse",
+            )}
+          />
           <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-300">
             Integration check
           </span>
         </div>
 
         <h2 className="text-[19px] font-medium tracking-tight text-zinc-100">
-          {state.done && autoProgress >= 1 ? "Integration complete." : "Downloading runtime assets…"}
+          {state.done
+            ? cached
+              ? "Runtime ready."
+              : "Ready — Web Speech will be used."
+            : "Warming up models…"}
         </h2>
 
         <div className="relative h-3 w-full overflow-hidden rounded-full border border-line-strong bg-zinc-950">
           <div
-            className={cn("absolute top-0 left-0 h-full rounded-full", barColor)}
-            style={{ width: `${Math.max(percent, 0)}%` }}
+            className={cn(
+              "absolute top-0 left-0 h-full rounded-full transition-[width] duration-200",
+              state.done ? "bg-emerald-400" : "bg-amber-400",
+            )}
+            style={{ width: `${Math.max(percent, state.done ? 100 : 1)}%` }}
           />
-          <div className="absolute top-0 right-0 flex h-full items-center px-2 font-mono text-[10px] text-zinc-500">
-            {Math.round(percent)}%
+          <div className="absolute top-0 right-0 flex h-full items-center px-2 font-mono text-[10px] text-zinc-400">
+            {percent}%
           </div>
         </div>
 
         <p className="font-mono text-[11px] text-zinc-500">
-          {state.total > 0
-            ? `${state.loaded} of ${state.total} KB`
-            : `${Math.round(elapsedMs / 1000)}s · step ${stepDoneCount}: ${currentStep.label}`}
+          {`${(phaseLoaded / MB).toFixed(1)} of ${(phaseTotal / MB).toFixed(1)} MB`}
+          {state.phase === "voice" && !state.done ? " · voice weights" : ""}
+          {!state.done ? ` · ${seconds}s` : ""}
         </p>
 
-        <div className="flex flex-col gap-3">
-          {STEPS.map((step, i) => (
-            <div
-              key={step.id}
-              className="flex items-center gap-2"
-              data-done={i <= stepIndex}
-            >              <span
+        <div className="flex flex-col gap-2.5">
+          {stages.map((stage) => (
+            <div key={stage.id} className="flex items-center gap-2.5">
+              <span
                 className={cn(
-                  "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-line",
-                  i < stepIndex
-                    ? "border-zinc-600"
-                    : i === stepIndex
-                      ? "border-emerald-400/60 bg-emerald-400/10"
-                      : "",
+                  "h-1.5 w-1.5 shrink-0 rounded-full",
+                  stage.complete
+                    ? "bg-emerald-400"
+                    : stage.id === state.phase && state.phase !== "ready"
+                      ? "bg-amber-400 animate-pulse"
+                      : "bg-zinc-700",
                 )}
-              >
-                {i < stepIndex ? (
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                ) : (
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                )}
-              </span>
+              />
               <span
                 className={cn(
                   "text-[12.5px]",
-                  i < stepIndex ? "text-zinc-600" : "text-zinc-200",
-                  i === stepIndex ? statusColor : "",
+                  stage.complete ? "text-zinc-200" : "text-zinc-400",
                 )}
               >
-                {step.label}
+                {stage.label}
+              </span>
+              <span className="ml-auto font-mono text-[10.5px] text-zinc-600">
+                {stage.detail}
               </span>
             </div>
           ))}
-          {state.done && autoProgress >= 1 ? (
-            <div className="mt-1 font-mono text-[10.5px] text-zinc-600">
-              All {ASSETS_TOTAL} integration assets verified.
-            </div>
-          ) : null}
         </div>
+
+        {state.supported === false ? (
+          <p className="font-mono text-[10.5px] leading-relaxed text-amber-400/80">
+            {state.error}
+          </p>
+        ) : null}
+
+        <p className="text-[11.5px] leading-relaxed text-zinc-600">
+          {state.done
+            ? "Weights are cached in this browser's private storage, so the next interview starts immediately."
+            : "First visit downloads the speech models in the background. You can carry on — the interview will use Web Speech until the weights are warm."}
+        </p>
+
+        <button
+          onClick={finish}
+          className="self-start rounded border border-line-strong px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-zinc-200"
+        >
+          {state.done ? "Continue" : "Skip and use Web Speech"}
+        </button>
       </div>
     </div>
   );

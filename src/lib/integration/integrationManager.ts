@@ -1,96 +1,165 @@
 "use client";
 
-import * as React from "react";
+import {
+  getPiperSnapshot,
+  isPiperSupported,
+  listStoredVoices,
+  warmUpPiper,
+} from "@/lib/tts/piperTts";
+import { DEFAULT_VOICE_ID, voiceBytes } from "@/lib/tts/voices";
+
+/**
+ * Real runtime warm-up, kicked off the moment the site loads.
+ *
+ * Two stages, both with genuine byte-level progress:
+ *   1. `vad`   — Silero VAD models + onnxruntime WebAssembly from our origin
+ *   2. `voice` — Piper voice weights (Hugging Face -> OPFS) + espeak-ng
+ *                phonemizer, then the inference session itself
+ *
+ * The Piper weights live in Origin Private File System, so on any later visit
+ * stage 2 only has to load from disk — the 80-odd MB download happens once
+ * per browser profile, never again.
+ */
+
+export type IntegrationPhase = "vad" | "voice" | "ready";
 
 export interface IntegrationState {
-  done: boolean;
+  phase: IntegrationPhase;
+  vadLoaded: number;
+  vadTotal: number;
+  voiceLoaded: number;
+  voiceTotal: number;
   loaded: number;
   total: number;
+  done: boolean;
+  error?: string;
+  supported: boolean;
 }
 
-const ASSETS: { url: string; sizeKb: number }[] = [
-  { url: "/vad/silero_vad_v5.onnx", sizeKb: 900 },
-  { url: "/vad/silero_vad_v6.onnx", sizeKb: 900 },
-  { url: "/vad/silero_vad_legacy.onnx", sizeKb: 800 },
-  { url: "/vad/vad.worklet.bundle.min.js", sizeKb: 12 },
-  { url: "/vad/ort-wasm-simd-threaded.mjs", sizeKb: 60 },
-  { url: "/vad/ort-wasm-simd-threaded.wasm", sizeKb: 5200 },
-  { url: "/vad/ort-wasm-simd-threaded.jsep.mjs", sizeKb: 80 },
-  { url: "/vad/ort-wasm-simd-threaded.jsep.wasm", sizeKb: 5200 },
-  { url: "/vad/ort-wasm-simd-threaded.jspi.mjs", sizeKb: 90 },
-  { url: "/vad/ort-wasm-simd-threaded.jspi.wasm", sizeKb: 5100 },
-  { url: "/vad/ort-wasm-simd-threaded.asyncify.mjs", sizeKb: 90 },
-  { url: "/vad/ort-wasm-simd-threaded.asyncify.wasm", sizeKb: 5100 },
+/** Assets VAD actually requests (verified against the vad-web bundle). */
+const VAD_ASSETS: { url: string; bytes: number }[] = [
+  { url: "/vad/silero_vad_v5.onnx", bytes: 2_327_524 },
+  { url: "/vad/silero_vad_v6.onnx", bytes: 2_327_524 },
+  { url: "/vad/silero_vad_legacy.onnx", bytes: 1_807_522 },
+  { url: "/vad/vad.worklet.bundle.min.js", bytes: 2_480 },
+  { url: "/vad/ort-wasm-simd-threaded.mjs", bytes: 24_738 },
+  { url: "/vad/ort-wasm-simd-threaded.wasm", bytes: 14_848_852 },
 ];
+
+const PHONEMIZER_BYTES = 18_077_249 + 635_212;
+
+const VAD_TOTAL = VAD_ASSETS.reduce((sum, a) => sum + a.bytes, 0);
+const VOICE_TOTAL = voiceBytes(DEFAULT_VOICE_ID) + PHONEMIZER_BYTES;
 
 const listeners = new Set<() => void>();
 const emit = () => {
   for (const fn of listeners) fn();
 };
 
-export function onIntegrationChange(fn: () => void): () => void {
-  listeners.add(fn);
-  return () => listeners.delete(fn);
+let state: IntegrationState = {
+  phase: "vad",
+  vadLoaded: 0,
+  vadTotal: VAD_TOTAL,
+  voiceLoaded: 0,
+  voiceTotal: VOICE_TOTAL,
+  loaded: 0,
+  total: VAD_TOTAL + VOICE_TOTAL,
+  done: false,
+  supported: true,
+};
+
+export function getIntegrationState(): IntegrationState {
+  return state;
 }
 
-let state: IntegrationState = { done: false, loaded: 0, total: 0 };
+export function onIntegrationChange(fn: () => void): () => void {
+  listeners.add(fn);
+  return () => {
+    listeners.delete(fn);
+  };
+}
+
 let started = false;
 
-/**
- * Downloads the runtime assets (Silero VAD + ORT WebAssembly) in the
- * background right after the website loads, so that when the user reaches
- * the integration check screen they are already (mostly) done.
- * Runs at most once per browser session.
- */
 export function startBackgroundDownload() {
   if (started || typeof window === "undefined") return;
-  if (sessionStorage.getItem("sd-integration-started") === "1") {
-    state = { done: true, loaded: 1, total: 1 };
-    emit();
-    return;
-  }
-  sessionStorage.setItem("sd-integration-started", "1");
   started = true;
-  void runDownloads();
+
+  if (!isPiperSupported()) {
+    state = {
+      ...state,
+      supported: false,
+      error: "This browser cannot cache Piper weights (needs OPFS).",
+    };
+    emit();
+  }
+  void run();
 }
 
 export function isIntegrationDone() {
   return state.done;
 }
 
-export function getIntegrationState(): IntegrationState {
-  return state;
-}
+async function run() {
+  await prefetchVad();
+  state = { ...state, phase: "voice", loaded: state.vadLoaded, total: VOICE_TOTAL };
+  emit();
 
-async function runDownloads() {
-  for (const item of ASSETS) {
-    let loadedNow = 0;
-    try {
-      const res = await fetch(item.url);
-      if (!res.ok) throw new Error(`${item.url} -> ${res.status}`);
-      const body = res.body;
-      if (body) {
-        const reader = body.getReader();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          loadedNow += value.byteLength;
-        }
-      }
-      const header = Number(res.headers.get("content-length"));
-      state = {
-        done: state.done,
-        loaded: state.loaded + Math.min(loadedNow, item.sizeKb * 1024),
-        total: state.total + Math.max(header || item.sizeKb * 1024, loadedNow),
-      };
-    } catch (error) {
-      console.warn("[integration] download failed", item.url, error);
-    }
+  const ok = await warmUpPiper(DEFAULT_VOICE_ID, (loaded) => {
+    const clamped = Math.min(loaded, VOICE_TOTAL);
+    state = { ...state, voiceLoaded: clamped, loaded: clamped, total: VOICE_TOTAL };
     emit();
-    if (state.loaded >= state.total && state.total > 0) break;
-  }
-  state = { done: true, loaded: state.total > 0 ? state.total : 1, total: state.total || 1 };
+  });
+
+  const stored = await listStoredVoices();
+  state = {
+    ...state,
+    phase: ok ? "ready" : state.phase,
+    done: true,
+    loaded: VOICE_TOTAL,
+    total: VOICE_TOTAL,
+    error: ok
+      ? undefined
+      : (getPiperSnapshot().error ??
+        (stored.includes(DEFAULT_VOICE_ID)
+          ? undefined
+          : "Piper voice unavailable — falling back to Web Speech.")),
+  };
   emit();
 }
 
-void React;
+async function prefetchVad() {
+  let loaded = 0;
+  await Promise.all(
+    VAD_ASSETS.map(async (asset) => {
+      let got = 0;
+      try {
+        const res = await fetch(asset.url);
+        if (!res.ok || !res.body) return;
+        const reader = res.body.getReader();
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          got += value.byteLength;
+          const totalLoaded = Math.min(
+            loaded + got,
+            VAD_TOTAL,
+          );
+          state = {
+            ...state,
+            phase: "vad",
+            vadLoaded: totalLoaded,
+            loaded: totalLoaded,
+            total: VAD_TOTAL,
+          };
+          emit();
+        }
+      } catch {
+        /* VAD fetches it on demand anyway */
+      }
+      loaded += Math.max(got, asset.bytes * 0.6);
+    }),
+  );
+  state = { ...state, phase: "vad", vadLoaded: VAD_TOTAL, loaded: VAD_TOTAL, total: VAD_TOTAL };
+  emit();
+}

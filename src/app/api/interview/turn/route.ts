@@ -4,8 +4,8 @@ import { interviewerSystemPrompt } from "@/lib/interview/prompts";
 import { getScenario } from "@/lib/interview/scenarios";
 import {
   ApiError,
-  FOREGROUND_MODEL,
   errorResponse,
+  generateWithFallback,
   getGenAI,
 } from "@/lib/server/genai";
 
@@ -98,18 +98,19 @@ export async function POST(req: Request) {
       };
 
       try {
-        const response = await ai.models.generateContentStream({
-          model: FOREGROUND_MODEL,
-          contents,
-          config: {
-            systemInstruction: interviewerSystemPrompt(scenario),
-            temperature: 0.85,
-            topP: 0.9,
-            maxOutputTokens: 300,
-            thinkingConfig: { thinkingBudget: 0 },
-            abortSignal: req.signal,
-          },
-        });
+        const response = await generateWithFallback((model) =>
+          ai.models.generateContentStream({
+            model,
+            contents,
+            config: {
+              systemInstruction: interviewerSystemPrompt(scenario),
+              temperature: 0.85,
+              topP: 0.9,
+              maxOutputTokens: 300,
+              abortSignal: req.signal,
+            },
+          }),
+        );
 
         let first = true;
         let full = "";

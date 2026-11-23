@@ -38,6 +38,9 @@ yarn-error.log*
 # (runs automatically on `npm install`) instead of being committed.
 /public/vad/
 
+# Piper espeak-ng phonemizer (wasm + data) — same story.
+/public/piper/
+
 # vercel
 .vercel
 
