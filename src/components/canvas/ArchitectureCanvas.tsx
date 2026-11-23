@@ -13,6 +13,7 @@ import {
   type Connection,
   type EdgeChangeset,
   type NodeChangeset,
+  type ReactFlowInstance,
 } from "@xyflow/react";
 import { applyEdgeChanges, applyNodeChanges } from "@xyflow/system";
 import "@xyflow/react/dist/style.css";
@@ -46,13 +47,32 @@ const defaultEdgeOptions = {
   labelBgBorderRadius: 3,
 };
 
-function ArchitectureCanvasInner({ readOnly }: { readOnly?: boolean }) {
+interface ArchitectureCanvasProps {
+  readOnly?: boolean;
+  showControls?: boolean;
+  showPalette?: boolean;
+  onInstance?: (instance: ReactFlowInstance) => void;
+  onViewportChange?: (zoom: number) => void;
+}
+
+function ArchitectureCanvasInner({
+  readOnly,
+  showControls = true,
+  showPalette = true,
+  onInstance,
+  onViewportChange,
+}: ArchitectureCanvasProps) {
   const nodes = useInterviewStore((s) => s.nodes);
   const edges = useInterviewStore((s) => s.edges);
   const setGraph = useInterviewStore((s) => s.setGraph);
   const markCanvasEdit = useInterviewStore((s) => s.markCanvasEdit);
   const updateEdgeLabel = useInterviewStore((s) => s.updateEdgeLabel);
-  const { screenToFlowPosition } = useReactFlow();
+  const rf = useReactFlow();
+  const { screenToFlowPosition } = rf;
+
+  React.useEffect(() => {
+    onInstance?.(rf);
+  }, [onInstance, rf]);
 
   const [editingEdge, setEditingEdge] = React.useState<{
     id: string;
@@ -152,7 +172,7 @@ function ArchitectureCanvasInner({ readOnly }: { readOnly?: boolean }) {
 
   return (
     <div className="relative h-full w-full">
-      {!readOnly ? <NodePalette onAdd={addNode} /> : null}
+      {!readOnly && showPalette ? <NodePalette onAdd={addNode} /> : null}
 
       <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
         {readOnly ? (
@@ -186,6 +206,7 @@ function ArchitectureCanvasInner({ readOnly }: { readOnly?: boolean }) {
           event.dataTransfer.dropEffect = "move";
         }}
         onNodeDragStop={onNodeDragStop}
+        onMove={(_, viewport) => onViewportChange?.(viewport.zoom)}
         onEdgeDoubleClick={(_, edge) =>
           setEditingEdge({
             id: edge.id,
@@ -209,19 +230,23 @@ function ArchitectureCanvasInner({ readOnly }: { readOnly?: boolean }) {
           size={1}
           color="#232329"
         />
-        <Controls
-          position="bottom-left"
-          showInteractive={false}
-          className="!bottom-3 !left-3"
-        />
-        <MiniMap
-          position="bottom-right"
-          pannable
-          zoomable
-          nodeColor="#2a2a31"
-          maskColor="rgba(9,9,11,0.75)"
-          className="!bottom-3 !right-3"
-        />
+        {showControls ? (
+          <Controls
+            position="bottom-left"
+            showInteractive={false}
+            className="!bottom-3 !left-3"
+          />
+        ) : null}
+        {showControls ? (
+          <MiniMap
+            position="bottom-right"
+            pannable
+            zoomable
+            nodeColor="#2a2a31"
+            maskColor="rgba(9,9,11,0.75)"
+            className="!bottom-3 !right-3"
+          />
+        ) : null}
       </ReactFlow>
 
       {nodes.length === 0 ? (
@@ -306,10 +331,22 @@ function ArchitectureCanvasInner({ readOnly }: { readOnly?: boolean }) {
   );
 }
 
-export function ArchitectureCanvas({ readOnly }: { readOnly?: boolean }) {
+export function ArchitectureCanvas({
+  readOnly,
+  showControls = true,
+  showPalette = true,
+  onInstance,
+  onViewportChange,
+}: ArchitectureCanvasProps) {
   return (
     <ReactFlowProvider>
-      <ArchitectureCanvasInner readOnly={readOnly} />
+      <ArchitectureCanvasInner
+        readOnly={readOnly}
+        showControls={showControls}
+        showPalette={showPalette}
+        onInstance={onInstance}
+        onViewportChange={onViewportChange}
+      />
     </ReactFlowProvider>
   );
 }

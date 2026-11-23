@@ -107,7 +107,6 @@ export async function POST(req: Request) {
               temperature: 0.85,
               topP: 0.9,
               maxOutputTokens: 300,
-              abortSignal: req.signal,
             },
           }),
         );

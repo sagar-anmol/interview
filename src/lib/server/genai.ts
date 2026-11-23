@@ -52,7 +52,10 @@ export function getGenAI(): GoogleGenAI {
       "GEMINI_API_KEY is not configured. Add it to .env.local.",
     );
   }
-  return new GoogleGenAI({ apiKey });
+  // The SDK defaults to v1, but several current aliases (for example
+  // `gemini-flash-lite-latest`) are only served from v1beta. ListModels and
+  // generateContent both work on v1beta for the whole fallback chain.
+  return new GoogleGenAI({ apiKey, apiVersion: "v1beta" });
 }
 
 export function parseJsonResponse<T>(text: string | undefined): T {

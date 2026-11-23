@@ -86,7 +86,6 @@ export async function POST(req: Request) {
           maxOutputTokens: 900,
           responseMimeType: "application/json",
           responseSchema: EVALUATE_SCHEMA,
-          abortSignal: req.signal,
         },
       }),
     );

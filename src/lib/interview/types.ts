@@ -43,6 +43,11 @@ export interface SessionConfig {
   format: "voice" | "text";
   role?: "interviewer" | "candidate";
   roomCode?: string;
+  practiceMeta?: {
+    track?: string;
+    focusArea?: string;
+    targetRole?: string;
+  };
   createdAt: number;
 }
 

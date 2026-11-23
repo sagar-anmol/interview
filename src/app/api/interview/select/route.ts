@@ -83,7 +83,6 @@ export async function POST(req: Request) {
           maxOutputTokens: 700,
           responseMimeType: "application/json",
           responseSchema: SELECT_SCHEMA,
-          abortSignal: req.signal,
         },
       }),
     );
