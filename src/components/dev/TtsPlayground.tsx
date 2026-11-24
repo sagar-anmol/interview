@@ -17,8 +17,25 @@ import { DEFAULT_VOICE_ID, VOICES, voiceBytes } from "@/lib/tts/voices";
 
 const MB = 1_048_576;
 
+const SSR_SNAPSHOT: PiperSnapshot = {
+  status: "idle",
+  voiceId: "",
+  loaded: 0,
+  total: 0,
+};
+
 export function TtsPlayground() {
-  const [snapshot, setSnapshot] = React.useState<PiperSnapshot>(getPiperSnapshot);
+  const snapshot = React.useSyncExternalStore(
+    subscribePiper,
+    getPiperSnapshot,
+    () => SSR_SNAPSHOT,
+  );
+  const supported = React.useSyncExternalStore(
+    subscribePiper,
+    isPiperSupported,
+    () => false,
+  );
+  const warm = React.useSyncExternalStore(subscribePiper, isPiperReady, () => false);
   const [voiceId, setVoiceId] = React.useState(DEFAULT_VOICE_ID);
   const [stored, setStored] = React.useState<string[]>([]);
   const [text, setText] = React.useState(
@@ -37,13 +54,8 @@ export function TtsPlayground() {
     ]);
 
   React.useEffect(() => {
-    const unsub = subscribePiper(() => setSnapshot(getPiperSnapshot()));
     void listStoredVoices().then(setStored);
-    return unsub;
   }, []);
-
-  const supported = isPiperSupported();
-  const warm = isPiperReady();
 
   React.useEffect(() => {
     if (!queueRef.current) queueRef.current = new AudioQueue();
@@ -206,7 +218,7 @@ export function TtsPlayground() {
                 <button
                   onClick={() => void handleRemove(id)}
                   disabled={busy}
-                  className="ml-auto rounded border border-line px-2 py-0.5 font-mono text-[10px] text-slate-500 hover:bg-slate-100 disabled:opacity-40"
+                  className="ml-auto rounded border border-line px-2.5 py-1.5 font-mono text-[10px] text-slate-500 hover:bg-slate-100 disabled:opacity-40"
                 >
                   delete
                 </button>

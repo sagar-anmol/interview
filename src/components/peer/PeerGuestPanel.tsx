@@ -125,14 +125,17 @@ export function PeerGuestPanel() {
           <span className="font-mono text-[10px] text-slate-500">
             {connected ? formatClock(elapsed) : "joining…"}
           </span>
-          <Link href="/" className="text-[11px] text-slate-500 underline">
+          <Link
+            href="/"
+            className="inline-flex items-center px-1 py-2 text-[11px] text-slate-500 underline"
+          >
             New session
           </Link>
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        <aside className="w-[360px] shrink-0 border-r border-line bg-panel">
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+        <aside className="flex h-[40vh] w-full shrink-0 flex-col overflow-y-auto border-b border-line bg-panel md:h-auto md:w-[360px] md:border-b-0 md:border-r">
           <div className="border-b border-line p-3">
             <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
               Candidate · You draw
@@ -181,7 +184,7 @@ export function PeerGuestPanel() {
           </div>
         </aside>
 
-        <div className="relative min-w-0 flex-1">
+        <div className="relative min-h-[50vh] min-w-0 flex-1">
           <ArchitectureCanvas />
           <PeerVideoPanel
             own={ownVideo}

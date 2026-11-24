@@ -156,7 +156,7 @@ export function PeerInterview({ sessionId }: { sessionId: string }) {
         onEnd={() => void handleEnd()}
       />
 
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         <PeerHostPanel
           scenarioTitle={scenarioTitle || getScenario(config.scenarioId).title}
           roomCode={config.roomCode ?? ""}
@@ -183,7 +183,7 @@ export function PeerInterview({ sessionId }: { sessionId: string }) {
           ending={ending}
         />
 
-        <div className="relative min-w-0 flex-1">
+        <div className="relative min-h-[50vh] min-w-0 flex-1">
           <ArchitectureCanvas readOnly />
           <PeerVideoPanel
             own={ownVideo}
@@ -229,7 +229,7 @@ function PeerHostPanel(props: {
   const guide = useInterviewStore((s) => s.interviewerGuide);
 
   return (
-    <aside className="flex h-full w-[400px] shrink-0 flex-col border-r border-line bg-panel">
+    <aside className="flex h-[40vh] w-full shrink-0 flex-col overflow-y-auto border-b border-line bg-panel md:h-full md:w-[400px] md:border-b-0 md:border-r">
       <div className="border-b border-line p-3">
         <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
           Interviewer · host
@@ -242,7 +242,7 @@ function PeerHostPanel(props: {
             <span className="text-slate-500">Room code</span>
             <button
               onClick={props.onCopy}
-              className="flex items-center gap-1 rounded border border-line-strong px-2 py-0.5 font-mono text-[10px] text-slate-600 hover:bg-slate-200"
+              className="flex items-center gap-1 rounded border border-line-strong px-2 py-1.5 font-mono text-[10px] text-slate-600 hover:bg-slate-200"
             >
               {props.roomCode || "----"}
               {props.roomCopied ? " copied" : ""}
@@ -288,7 +288,7 @@ function PeerHostPanel(props: {
       <TranscriptFeed turns={props.turns} />
 
       <div className="border-t border-line bg-panel p-3">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             onClick={props.onSubmitText}
             disabled={props.ended || !props.textInput.trim()}

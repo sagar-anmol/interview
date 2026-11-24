@@ -32,11 +32,11 @@ export function SessionBottomBar({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-between gap-3 border-t border-line bg-panel",
+        "flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-line bg-panel",
         variant === "voice" ? "px-5 py-3.5" : "px-4 py-2.5",
       )}
     >
-      <div className="flex min-w-0 items-center gap-3">
+      <div className="flex min-w-0 flex-wrap items-center gap-2 gap-y-1.5">
         {showSubmit ? (
           <Button variant="subtle" size="sm" onClick={onSubmit}>
             Submit interview
@@ -48,9 +48,11 @@ export function SessionBottomBar({
         </span>
       </div>
 
-      {center ? <div className="flex items-center gap-2">{center}</div> : null}
+      {center ? (
+        <div className="flex flex-wrap items-center justify-center gap-2">{center}</div>
+      ) : null}
 
-      <div className="flex min-w-0 items-center gap-2">{right}</div>
+      <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">{right}</div>
     </div>
   );
 }

@@ -89,8 +89,8 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
-      <div className="flex min-h-0 flex-1">
-        <section className="flex w-[32%] min-w-[280px] max-w-[420px] shrink-0 flex-col border-r border-line bg-panel">
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+        <section className="flex h-[36vh] w-full shrink-0 flex-col overflow-hidden border-b border-line bg-panel md:h-auto md:w-[32%] md:min-w-[280px] md:max-w-[420px] md:border-b-0 md:border-r">
           <div className="flex h-11 shrink-0 items-center gap-4 border-b border-line px-4">
             {(["question", "solution", "transcript"] as Tab[]).map((key) => (
               <button
@@ -113,7 +113,7 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
               aria-label="Reset view"
               title="Reset view"
               onClick={resetView}
-              className="ml-auto rounded p-1 text-muted hover:bg-slate-100 hover:text-slate-700"
+              className="ml-auto flex h-7 w-7 items-center justify-center rounded p-1 text-muted hover:bg-slate-100 hover:text-slate-700"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
@@ -166,7 +166,7 @@ export function SystemDesignWorkspace({ id }: { id: string }) {
           </div>
         </section>
 
-        <section className="relative min-w-0 flex-1 bg-panel-2">
+        <section className="relative min-h-0 min-w-0 flex-1 bg-panel-2">
           <ArchitectureCanvas
             showControls={false}
             locked={locked}

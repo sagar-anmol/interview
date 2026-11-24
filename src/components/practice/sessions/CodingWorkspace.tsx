@@ -199,8 +199,8 @@ export function CodingWorkspace({ id }: { id: string }) {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
-      <div className="flex min-h-0 flex-1">
-        <section className="flex w-[34%] min-w-[290px] max-w-[460px] shrink-0 flex-col border-r border-line bg-panel">
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+        <section className="flex h-[34vh] w-full shrink-0 flex-col overflow-hidden border-b border-line bg-panel md:h-auto md:w-[34%] md:min-w-[290px] md:max-w-[460px] md:border-b-0 md:border-r">
           <div className="flex h-11 shrink-0 items-center gap-4 border-b border-line px-4">
             {(["question", "hints", "solution", "transcript"] as Tab[]).map((key) => (
               <button
@@ -223,7 +223,7 @@ export function CodingWorkspace({ id }: { id: string }) {
               aria-label="Reset question"
               title="Reset question and code"
               onClick={resetEverything}
-              className="ml-auto rounded p-1 text-muted hover:bg-slate-100 hover:text-slate-700"
+              className="ml-auto flex h-7 w-7 items-center justify-center rounded p-1 text-muted hover:bg-slate-100 hover:text-slate-700"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
@@ -315,7 +315,7 @@ export function CodingWorkspace({ id }: { id: string }) {
               <select
                 value={language}
                 onChange={(e) => changeLanguage(e.target.value as Language)}
-                className="bg-transparent text-slate-700 outline-none"
+                className="min-h-[26px] bg-transparent text-slate-700 outline-none"
               >
                 <option value="javascript">JavaScript</option>
                 <option value="python">Python</option>
@@ -325,7 +325,7 @@ export function CodingWorkspace({ id }: { id: string }) {
             <button
               type="button"
               onClick={() => setCode(STARTER_CODE[language])}
-              className="text-[11px] text-muted transition hover:text-slate-700"
+              className="min-h-[26px] px-1.5 text-[11px] text-muted transition hover:text-slate-700"
             >
               Reset
             </button>
@@ -344,7 +344,7 @@ export function CodingWorkspace({ id }: { id: string }) {
               onChange={(e) => setCode(e.target.value)}
               spellCheck={false}
               aria-label="Code editor"
-              className="min-h-full min-w-full flex-1 resize-none bg-transparent py-3 pl-3 pr-6 text-slate-900 outline-none"
+              className="min-h-full min-w-0 flex-1 resize-none bg-transparent py-3 pl-3 pr-6 text-slate-900 outline-none"
             />
           </div>
 
@@ -370,7 +370,7 @@ export function CodingWorkspace({ id }: { id: string }) {
                 <button
                   type="button"
                   onClick={() => setConsoleOpen(false)}
-                  className="ml-auto text-[10.5px] text-muted hover:text-slate-700"
+                  className="ml-auto min-h-[26px] px-1.5 text-[10.5px] text-muted hover:text-slate-700"
                 >
                   Hide console
                 </button>

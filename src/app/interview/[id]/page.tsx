@@ -37,7 +37,7 @@ export default function InterviewPage() {
         </p>
         <Link
           href="/new?mode=ai"
-          className="text-[12px] text-slate-500 underline"
+          className="inline-flex items-center py-2 text-[12px] text-slate-500 underline"
         >
           Start a new session
         </Link>

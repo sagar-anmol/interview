@@ -33,7 +33,7 @@ export function TopControlBar({
   const warning = remainingSec <= 300;
 
   return (
-    <header className="flex h-12 shrink-0 items-center justify-between border-b border-line bg-panel px-3">
+    <header className="flex min-h-12 shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-b border-line bg-panel px-3 py-2 md:h-12 md:flex-nowrap md:py-0">
       <div className="flex min-w-0 items-center gap-2.5">
         <Badge
           className={
@@ -72,7 +72,7 @@ export function TopControlBar({
         </span>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-2 md:ml-0">
         <span className="hidden rounded border border-line bg-panel px-2 py-0.5 font-mono text-[10px] tracking-tight text-slate-500 xl:inline">
           TTFA: {ttfaMs ? `${ttfaMs}ms` : "—"}
         </span>

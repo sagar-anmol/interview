@@ -131,7 +131,7 @@ export function VoiceStageWorkspace({ id, track, role }: VoiceStageWorkspaceProp
                 type="button"
                 onClick={() => setTranscriptOpen(false)}
                 aria-label="Close transcript"
-                className="rounded p-1 text-muted hover:text-slate-900"
+                className="flex h-7 w-7 items-center justify-center rounded p-1 text-muted hover:text-slate-900"
               >
                 <X className="h-3.5 w-3.5" />
               </button>

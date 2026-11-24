@@ -46,34 +46,27 @@ function ScoreTable({ scores }: { scores: ScoreRow[] }) {
             ? SCORE_LABELS.dataModeling
             : SCORE_LABELS.communication);
   return (
-    <table className="w-full border-collapse text-[12.5px]">
-      <thead>
-        <tr className="border-b border-line">
-          <th className="py-2 text-left font-mono text-[10px] uppercase tracking-wider text-slate-500">
-            Area
-          </th>
-          <th className="py-2 text-right font-mono text-[10px] uppercase tracking-wider text-slate-500">
-            Score (1–5)
-          </th>
-          <th className="py-2 text-left font-mono text-[10px] uppercase tracking-wider text-slate-500">
-            Rationale
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {scores.map((s) => (
-          <tr key={s.key} className="border-b border-line/70">
-            <td className="py-2.5 text-slate-700">{label(s)}</td>
-            <td className="py-2.5 text-right font-mono text-slate-500">
-              {s.score}
-            </td>
-            <td className="py-2.5 leading-relaxed text-slate-600">
-              {s.rationale}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="mt-2 rounded-md border border-line">
+      <div className="hidden grid-cols-[1fr_64px_2fr] gap-3 border-b border-line bg-slate-50 px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-slate-500 sm:grid">
+        <span>Area</span>
+        <span className="text-right">Score (1–5)</span>
+        <span>Rationale</span>
+      </div>
+      {scores.map((s) => (
+        <div
+          key={s.key}
+          className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 border-b border-line/70 px-3 py-2.5 last:border-b-0 sm:grid-cols-[1fr_64px_2fr] sm:gap-y-0"
+        >
+          <span className="text-[12.5px] text-slate-700">{label(s)}</span>
+          <span className="text-right font-mono text-[12.5px] text-slate-500">
+            {s.score}
+          </span>
+          <span className="col-span-2 text-[12.5px] leading-relaxed text-slate-600 sm:col-span-1">
+            {s.rationale}
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }
 
